@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/auth';
-import { callGeminiApi } from "@/lib/geminiUtils";
+import { generateGeminiText } from "@/lib/geminiUtils";
 
 const prisma = new PrismaClient();
 
@@ -39,10 +39,7 @@ export async function POST(req: NextRequest) {
     const truncatedInput = input.slice(0, 200);
     const prompt = `Create 3 short, catchy brand slogans for: ${truncatedInput}`;
 
-    const text = await callGeminiApi({
-      modelName: "gemini-1.5-flash",
-      prompt: prompt,
-    });
+    const text = await generateGeminiText(prompt, "gemini-1.5-flash");
 
     console.log("Raw Gemini slogan response text:", text);
     const slogans = text.split('\n').filter(slogan => slogan.trim() !== '');
@@ -54,7 +51,7 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ slogans });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Slogan generation failed:", error);
     return NextResponse.json(
       { error: 'Failed to generate slogan' },

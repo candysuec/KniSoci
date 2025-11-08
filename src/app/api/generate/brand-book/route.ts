@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { generateBrandBook } from "@/lib/brandBookGenerator";
+import { generateGeminiText } from "@/lib/geminiUtils"; // Import the new utility
 
 // ✅ Generate the Brand Book API route
 export async function POST(req: Request) {
@@ -29,8 +30,11 @@ export async function POST(req: Request) {
       });
     }
 
-    // ✅ Generate the brand book
-    const brandBook = await generateBrandBook(existingBrand);
+    // ✅ Generate the brand book using the utility
+    const brandBook = await generateGeminiText(
+      `Generate a brand book for the following brand: ${JSON.stringify(existingBrand)}`,
+      "gemini-1.5-flash" // Specify model if needed
+    );
 
     // ✅ Update the brand with the generated brand book content
     await prisma.brand.update({

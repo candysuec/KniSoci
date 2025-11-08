@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { callGeminiApi } from "@/lib/geminiUtils";
+import { generateGeminiText } from "@/lib/geminiUtils";
 
 export async function POST(req: Request) {
   try {
@@ -15,10 +15,7 @@ export async function POST(req: Request) {
       Description: "${brandDescription}"
     `;
 
-    const text = await callGeminiApi({
-      modelName: "gemini-1.5-pro",
-      prompt: prompt,
-    });
+    const text = await generateGeminiText(prompt, "gemini-1.5-pro");
 
     console.log("Raw Gemini response:", text);
 

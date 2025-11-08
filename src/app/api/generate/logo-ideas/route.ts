@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client'; // Import PrismaClient
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/auth';
-import { callGeminiApi } from "@/lib/geminiUtils";
+import { generateGeminiText } from "@/lib/geminiUtils";
 
 export async function POST(req: NextRequest) {
   const prisma = new PrismaClient(); // Instantiate PrismaClient
@@ -31,10 +31,7 @@ export async function POST(req: NextRequest) {
     const truncatedInput = input.substring(0, 1000); // Truncate input to 1000 characters
     const prompt = `Generate 3-4 creative logo ideas (textual descriptions) for a brand described as: "${truncatedInput}". Focus on conveying the brand's essence and visual style. Return the response as a JSON array of strings.`;
 
-    const text = await callGeminiApi({
-      modelName: "gemini-1.5-flash",
-      prompt: prompt,
-    });
+    const text = await generateGeminiText(prompt, "gemini-1.5-flash");
 
     console.log("Raw Gemini logo ideas response text:", text);
     const result = JSON.parse(text);
@@ -48,7 +45,7 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(result);
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
     return NextResponse.json({ error: 'An unexpected error occurred.' }, { status: 500 });
   }
