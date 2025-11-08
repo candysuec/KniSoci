@@ -1,197 +1,128 @@
-import { sendAlert } from "@/lib/alerts/mailer";
-import fs from "fs";
-import path from "path";
-import { NextResponse } from "next/server";
+// src/lib/selfrepair.ts
+import { generateGeminiText } from "@/lib/geminiUtils";
 
-// Helper to safely read env
-const readEnv = (envLocalPath: string) => {
-  if (!fs.existsSync(envLocalPath)) return {};
-  const content = fs.readFileSync(envLocalPath, "utf8");
-  const env: Record<string, string> = {};
-  for (const line of content.split("\n")) {
-    const match = line.match(/^\s*([\w.-]+)\s*=\s*(.*)\s*$/);
-    if (match) env[match[1]] = match[2].replace(/^"|"$/g, "");
-  }
-  return env;
+export type SelfRepairInput = {
+  repair?: boolean;
+  context?: Record<string, unknown>;
 };
 
-// Detect recurring NextAuth JWT decryption issues
-function detectJWTSessionError(logText: string) {
-  const matches = logText.match(/JWEDecryptionFailed|JWT_SESSION_ERROR/g);
-  const count = matches ? matches.length : 0;
-
-  if (count === 0) {
-    return {
-      status: "✅",
-      message: "No NextAuth JWT decryption issues detected.",
-      level: "info",
+export type SelfRepairOutput = {
+  timestamp: string;
+  mode: "development" | "production" | string;
+  overall: string; // e.g., "✅ All systems nominal"
+  checks: {
+    codebase?: {
+      message: string;
+      deprecatedReferences?: number;
+      matches?: Array<{ file: string; line: number; snippet: string }>;
     };
-  }
-
-  if (count < 3) {
-    return {
-      status: "⚠️",
-      message: `Detected ${count} JWT_SESSION_ERROR occurrences — possible cookie or secret mismatch.`, 
-      level: "warn",
+    environment?: {
+      file?: string;
+      message: string;
+      fixes?: string[];
     };
-  }
-
-  return {
-    status: "❌",
-    message:
-      "Multiple JWT_SESSION_ERROR events detected. Likely invalid NEXTAUTH_SECRET or stale cookies. Clear browser cookies and verify env configuration.",
-    level: "error",
+    sdk?: {
+      version?: string;
+      message: string;
+      response?: string;
+    };
   };
-}
+};
 
-export async function runSelfRepair(dryrun = false, repair = false) {
-  const projectRoot = process.cwd();
-  const srcDir = path.join(projectRoot, "src");
-  const pkgPath = path.join(projectRoot, "package.json");
-  const envLocalPath = path.join(projectRoot, ".env.local");
+/**
+ * runSelfRepair orchestrates a prompt to Gemini and maps its output into
+ * the structured shape expected by the SelfRepair dashboard UI.
+ */
+export async function runSelfRepair(input: SelfRepairInput = {}): Promise<SelfRepairOutput> {
+  const now = new Date().toISOString();
 
-  const fixes: { file: string; line: number; before: string; after: string }[] = [];
-  const notes: string[] = [];
-  let pkgEdited = false;
-
-  // ---- 1) Source code rewrites ----
-  // Deprecated -> replacement (simple line rewrites)
-  const methodReplacements: Record<string, string> = {
-    ".listModels": "// [auto-fix] Deprecated .listModels() removed.\n// const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });",
-    ".generateText(": ".generateContent(",
-    ".generateTextStream(": ".generateContentStream(",
-    ".generateMessage(": ".generateContent(",
-    ".startChat(": ".startChatSession(",
-  };
-
-  // Import rewrites
-  const importOldPkg = " @google-ai/generativelanguage";
-  const importNewPkg = " @google/generative-ai";
-  const legacyIdentifiers = [
-    "TextServiceClient",
-    "DiscussServiceClient",
-    "ModelServiceClient",
-    "PredictionServiceClient",
-    "GoogleAIFileManager",
-  ];
-
-  function rewriteImportsAndMethods(filePath: string) {
-    const extOk = [".ts", ".tsx", ".js", ".jsx"].some((e) => filePath.endsWith(e));
-    if (!extOk) return;
-
-    const lines = fs.readFileSync(filePath, "utf8").split("\n");
-    let modified = false;
-
-    for (let i = 0; i < lines.length; i++) {
-      const orig = lines[i];
-
-      // A) Import package path modernization
-      if (orig.includes(importOldPkg)) {
-        modified = true;
-        const before = orig.trim();
-
-        // Replace package path
-        let after = orig.replace(importOldPkg, importNewPkg);
-
-        // If legacy client names are present, replace them with GoogleGenerativeAI in the import line
-        if (legacyIdentifiers.some((id) => orig.includes(id))) {
-          // naive replacement: replace entire import spec with GoogleGenerativeAI
-          after = after.replace(
-            /import\s+{[^}]+}\s+from\s+['"][^'"]+['"]/, // Corrected regex escaping
-            "import { GoogleGenerativeAI } from ' @google/generative-ai';"
-          );
-          notes.push(`[${path.relative(projectRoot, filePath)}] Replaced legacy clients with GoogleGenerativeAI`);
-        }
-
-        if (before !== after.trim()) {
-          lines[i] = after;
-          fixes.push({ file: filePath, line: i + 1, before, after: after.trim() });
+  // Build a resilient prompt; include flags and optional context to let Gemini reason.
+  const prompt = [
+    "You are a self-repair assistant for a Next.js + Prisma + NextAuth app.",
+    "Analyze the app’s state and produce a compact JSON summary with the following shape:",
+    `{
+      "timestamp": "<ISO timestamp>",
+      "mode": "development|production",
+      "overall": "✅|⚠️|❌ + short message",
+      "checks": {
+        "codebase": {
+          "message": "short status",
+          "deprecatedReferences": <number>,
+          "matches": [{"file":"...","line":123,"snippet":"..."}]
+        },
+        "environment": {
+          "file": ".env.local",
+          "message": "short status",
+          "fixes": ["..."]
+        },
+        "sdk": {
+          "version": "x.y.z",
+          "message": "short status",
+          "response": "short preview"
         }
       }
+    }`,
+    "",
+    "Constraints:",
+    "- Keep messages short and actionable.",
+    "- If you are unsure of a field, still return the key with a safe default.",
+    "- Do not include markdown; return only JSON.",
+    "",
+    `Flags: repair=${Boolean(input.repair)}`,
+    input.context ? `Context: ${JSON.stringify(input.context).slice(0, 4000)}` : "Context: none",
+  ].join("\n");
 
-      // B) Method rewrites (line-by-line replace)
-      for (const [deprecated, replacement] of Object.entries(methodReplacements)) {
-        if (lines[i].includes(deprecated)) {
-          modified = true;
-          const before = lines[i].trim();
-          const after = replacement;
-          lines[i] = after;
-          fixes.push({ file: filePath, line: i + 1, before, after });
-        }
-      }
-    }
+  // Call your unified Gemini helper (handles SDK differences)
+  const raw = await generateGeminiText(prompt);
 
-    if (modified && !dryrun) {
-      fs.writeFileSync(filePath, lines.join("\n"), "utf8");
-    }
-  }
-
-  function scanDir(dir: string) {
-    const entries = fs.readdirSync(dir, { withFileTypes: true });
-    for (const entry of entries) {
-      const full = path.join(dir, entry.name);
-      if (entry.isDirectory()) scanDir(full);
-      else rewriteImportsAndMethods(full);
-    }
-  }
-
-  // ---- 2) package.json update ----
-  function updatePackageJson() {
-    if (!fs.existsSync(pkgPath)) {
-      notes.push("package.json not found; skipping dependency update.");
-      return;
-    }
-
-    try {
-      const raw = fs.readFileSync(pkgPath, "utf8");
-      const pkg = JSON.parse(raw);
-
-      const deps = pkg.dependencies ?? {};
-      const devDeps = pkg.devDependencies ?? {};
-
-      const hasOld = deps[importOldPkg] || devDeps[importOldPkg];
-      const hasNew = deps[importNewPkg] || devDeps[importNewPkg];
-      const targetVersion = "^0.24.1";
-
-      if (hasOld) {
-        delete deps[importOldPkg];
-        delete devDeps[importOldPkg];
-        pkgEdited = true;
-        notes.push(`Removed '${importOldPkg}' from dependencies`);
-      }
-
-      if (!hasNew) {
-        deps[importNewPkg] = targetVersion;
-        pkgEdited = true;
-        notes.push(`Added '${importNewPkg} @${targetVersion}'`);
-      }
-
-      pkg.dependencies = deps;
-      pkg.devDependencies = devDeps;
-
-      if (pkgEdited && !dryrun) {
-        fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n", "utf8");
-      }
-    } catch (err: any) {
-      notes.push(`Failed to update package.json: ${err.message}`);
-    }
-  }
-
+  // Try to parse JSON; if the model returns prose, fall back to safe defaults.
+  let parsed: Partial<SelfRepairOutput> | null = null;
   try {
-    if (!fs.existsSync(srcDir)) {
-      throw new Error(`src directory not found at ${srcDir}`);
-    }
-
-    scanDir(srcDir);
-    updatePackageJson();
-
-    const message =
-      fixes.length === 0 && !pkgEdited
-        ? "No deprecated Gemini SDK code found."
-        : `${dryrun ? "Previewed" : "Patched"} ${fixes.length} code change(s)${pkgEdited ? " + package.json updated" : ""}.`;
-
-    return { status: "ok", dryrun, message, fixes, notes, pkgEdited };
-  } catch (error: any) {
-    return { status: "error", message: error.message, stack: error.stack };
+    parsed = JSON.parse(raw);
+  } catch {
+    parsed = null;
   }
+
+  // Safe defaults that your UI already knows how to render
+  const fallback: SelfRepairOutput = {
+    timestamp: now,
+    mode: process.env.NODE_ENV || "development",
+    overall: "⚠️ Could not parse model output. Using defaults.",
+    checks: {
+      codebase: {
+        message: "⚠️ Unable to analyze codebase details from model output.",
+        deprecatedReferences: 0,
+        matches: [],
+      },
+      environment: {
+        file: ".env.local",
+        message: "⚠️ Unable to verify environment variables from model output.",
+        fixes: [],
+      },
+      sdk: {
+        version: process.env.NEXT_PUBLIC_SDK_VERSION || "unknown",
+        message: "⚠️ Could not verify SDK health.",
+        response: raw?.slice(0, 300) || "No model text returned.",
+      },
+    },
+  };
+
+  // Merge parsed (if valid) over fallback
+  const out: SelfRepairOutput = {
+    ...fallback,
+    ...(parsed ?? {}),
+    timestamp: (parsed?.timestamp as string) || now,
+    checks: {
+      ...fallback.checks,
+      ...(parsed?.checks ?? {}),
+      codebase: { ...fallback.checks.codebase, ...(parsed?.checks?.codebase ?? {}) },
+      environment: { ...fallback.checks.environment, ...(parsed?.checks?.environment ?? {}) },
+      sdk: { ...fallback.checks.sdk, ...(parsed?.checks?.sdk ?? {}) },
+    },
+  };
+
+  // Ensure minimally required strings exist
+  if (!out.overall) out.overall = "⚠️ No overall status provided.";
+
+  return out;
 }
