@@ -22,16 +22,16 @@ export async function generateGeminiText(
   try {
     if (result.response && typeof result.response.text === "function") {
       return await result.response.text();
-    } else if (typeof result.text === "function") {
-      return await result.text();
     } else if (typeof result.response === "string") {
       return result.response;
-    } else {
-      console.error("Unexpected Gemini result format:", result);
-      throw new Error("Unexpected Gemini API response format.");
+    } else if (result.response && typeof result.response === "object" && "text" in result.response && typeof (result.response as any).text === "string") {
+      // Fallback for older SDK versions where .text() might not be a function but a direct string
+      return (result.response as any).text;
     }
-  } catch (err) {
-    console.error("Gemini API error:", err);
-    throw new Error("Failed to parse Gemini API response.");
+
+    throw new Error("Could not extract text from Gemini API response.");
+  } catch (error: any) {
+    console.error("Error in generateGeminiText:", error);
+    throw new Error(`Gemini API call failed: ${error.message}`);
   }
 }

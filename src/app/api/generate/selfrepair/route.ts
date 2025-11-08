@@ -30,7 +30,7 @@ export async function POST(request: Request) {
   const repair = url.searchParams.get("repair") === "true";
 
   try {
-    const result = await runSelfRepair(dryrun, repair);
+    const result = await runSelfRepair({ repair: repair });
     return NextResponse.json(result);
   } catch (error: any) {
     console.error("[/api/generate/selfrepair POST Error]", error);

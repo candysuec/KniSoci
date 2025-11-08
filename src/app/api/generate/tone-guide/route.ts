@@ -26,11 +26,7 @@ export async function POST(req: Request) {
     // Verify that the brand belongs to the logged-in user
     const existingBrand = await prisma.brand.findUnique({
       where: { id: brandId, userId: session.user.id },
-      include: { 
-        // Include all relevant brand data for context
-        mission: true, vision: true, values: true, targetAudience: true, usp: true, personalityTraits: true,
-        messagingMatrix: true, slogans: true, colorPalettes: true, logoIdeas: true, generatedLogoImage: true,
-      }
+      // No include for direct fields.
     });
 
     if (!existingBrand) {

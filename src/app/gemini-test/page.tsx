@@ -1,68 +1,86 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
-export default function Home() {
-  const [input, setInput] = useState('');
-  const [response, setResponse] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+export default function GeminiTestPage() {
+  const [results, setResults] = useState<Record<string, any>>({});
+  const [loading, setLoading] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    setResponse('');
+  const routes = [
+    {
+      name: "Brand Discovery",
+      path: "/api/generate/brand-discovery",
+      body: { prompt: "Describe the ideal brand voice for an eco-friendly coffee company." },
+    },
+    {
+      name: "Brand Book",
+      path: "/api/generate/brand-book",
+      body: { brandId: "test-id-123" },
+    },
+    {
+      name: "Self Repair",
+      path: "/api/generate/selfrepair",
+      body: { repair: false, context: { test: "connectivity check" } },
+    },
+  ];
+
+  async function testRoute(route: (typeof routes)[number]) {
+    setError(null);
+    setLoading(route.name);
 
     try {
-      const res = await fetch('/api/test/gemini', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: input }),
+      const res = await fetch(route.path, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(route.body),
       });
 
       const data = await res.json();
-
-      if (data.error) {
-        setError(data.error);
-      } else if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
-        setResponse(data.candidates[0].content.parts[0].text);
-      } else {
-        setError('No response received from Gemini.');
-      }
+      setResults((prev) => ({ ...prev, [route.name]: data }));
     } catch (err: any) {
       setError(err.message);
     } finally {
-      setLoading(false);
+      setLoading(null);
     }
-  };
+  }
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-6">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">💎 Gemini Chat Test</h1>
+    <div className="p-6 space-y-6">
+      <h1 className="text-3xl font-bold mb-2">🧪 Gemini API Test Dashboard</h1>
+      <p className="text-gray-500">Click each button to test a route and view its JSON response.</p>
 
-      <form onSubmit={handleSubmit} className="flex flex-col items-center w-full max-w-md">
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask Gemini anything..."
-          className="w-full h-32 p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button
-          type="submit"
-          disabled={loading || !input.trim()}
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
-        >
-          {loading ? 'Thinking...' : 'Ask Gemini'}
-        </button>
-      </form>
+      <div className="grid md:grid-cols-3 gap-6">
+        {routes.map((route) => (
+          <Card key={route.name} className="shadow-md border">
+            <CardHeader>
+              <CardTitle className="flex justify-between items-center">
+                {route.name}
+                <Button
+                  onClick={() => testRoute(route)}
+                  disabled={!!loading}
+                  className="ml-2"
+                >
+                  {loading === route.name ? "Testing..." : "Run Test"}
+                </Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {results[route.name] ? (
+                <pre className="text-xs bg-gray-100 p-2 rounded overflow-x-auto">
+                  {JSON.stringify(results[route.name], null, 2)}
+                </pre>
+              ) : (
+                <p className="text-sm text-gray-400 italic">No data yet.</p>
+              )}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
-      {error && <p className="mt-4 text-red-500">{error}</p>}
-      {response && (
-        <div className="mt-6 p-4 bg-white border border-gray-200 rounded-lg shadow-md w-full max-w-md">
-          <p className="text-gray-800 whitespace-pre-wrap">{response}</p>
-        </div>
-      )}
-    </main>
+      {error && <p className="text-red-600 font-medium">⚠️ {error}</p>}
+    </div>
   );
 }

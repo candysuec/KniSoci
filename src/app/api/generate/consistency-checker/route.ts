@@ -26,10 +26,7 @@ export async function POST(req: Request) {
     // Verify that the brand belongs to the logged-in user
     const existingBrand = await prisma.brand.findUnique({
       where: { id: brandId, userId: session.user.id },
-      include: { 
-        // Include the tone guide for context
-        toneGuide: true,
-      }
+      // No include for toneGuide, as it's a direct field.
     });
 
     if (!existingBrand) {

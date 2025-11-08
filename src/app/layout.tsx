@@ -19,8 +19,8 @@ export const metadata: Metadata = {
   description: "Your AI-powered branding assistant",
 };
 
-import { Header } from "@/components/shared/Header";
-import { Sidebar } from "@/components/shared/Sidebar";
+import Header from "@/components/shared/Header";
+import Sidebar from "@/components/shared/Sidebar";
 
 export default function RootLayout({
   children,

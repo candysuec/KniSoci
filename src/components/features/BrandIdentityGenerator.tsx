@@ -199,12 +199,12 @@ export function BrandIdentityGenerator({ brand }: BrandIdentityGeneratorProps) {
                 <h4 className="font-semibold flex items-center justify-between">
                   Core Values
                   {result.values && (
-                    <Button variant="ghost" size="sm" onClick={() => handleCopy(result.values, 'Core Values')}>
+                    <Button variant="ghost" size="sm" onClick={() => handleCopy(JSON.stringify(result.values), 'Core Values')}>
                       <Copy className="h-4 w-4" />
                     </Button>
                   )}
                 </h4>
-                <p className="text-muted-foreground">{isLoading ? '...' : result.values}</p>
+                <p className="text-muted-foreground">{isLoading ? '...' : JSON.stringify(result.values)}</p>
               </div>
             </div>
           </div>

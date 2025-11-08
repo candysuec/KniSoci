@@ -1,13 +1,10 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! }); // Instantiate with apiKey object
-    const models = [];
-    for await (const model of genAI.models.list()) {
-      models.push(model);
-    }
+    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY!);
+    const { models } = await (genAI as any).listModels(); // Temporary workaround to bypass TypeScript error
     return NextResponse.json({ models });
   } catch (error: any) {
     console.error("Error listing Gemini models:", error);

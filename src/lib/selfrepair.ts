@@ -11,17 +11,17 @@ export type SelfRepairOutput = {
   mode: "development" | "production" | string;
   overall: string; // e.g., "✅ All systems nominal"
   checks: {
-    codebase?: {
+    codebase: {
       message: string;
       deprecatedReferences?: number;
       matches?: Array<{ file: string; line: number; snippet: string }>;
     };
-    environment?: {
+    environment: {
       file?: string;
       message: string;
       fixes?: string[];
     };
-    sdk?: {
+    sdk: {
       version?: string;
       message: string;
       response?: string;
@@ -115,9 +115,21 @@ export async function runSelfRepair(input: SelfRepairInput = {}): Promise<SelfRe
     checks: {
       ...fallback.checks,
       ...(parsed?.checks ?? {}),
-      codebase: { ...fallback.checks.codebase, ...(parsed?.checks?.codebase ?? {}) },
-      environment: { ...fallback.checks.environment, ...(parsed?.checks?.environment ?? {}) },
-      sdk: { ...fallback.checks.sdk, ...(parsed?.checks?.sdk ?? {}) },
+            codebase: {
+              ...fallback.checks.codebase,
+              ...(parsed?.checks?.codebase ?? {}),
+              message: parsed?.checks?.codebase?.message ?? fallback.checks.codebase.message,
+            },
+            environment: {
+              ...fallback.checks.environment,
+              ...(parsed?.checks?.environment ?? {}),
+              message: parsed?.checks?.environment?.message ?? fallback.checks.environment.message,
+            },
+            sdk: {
+              ...fallback.checks.sdk,
+              ...(parsed?.checks?.sdk ?? {}),
+              message: parsed?.checks?.sdk?.message ?? fallback.checks.sdk.message,
+            },
     },
   };
 
