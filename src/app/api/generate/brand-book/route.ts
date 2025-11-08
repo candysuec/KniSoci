@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/db";
-import { generateBrandBook } from "@/lib/brandBookGenerator";
 import { generateGeminiText } from "@/lib/geminiUtils"; // Import the new utility
 
 // ✅ Generate the Brand Book API route
@@ -25,26 +24,22 @@ export async function POST(req: Request) {
 
     // ✅ Handle case where brand isn’t found or user doesn’t own it
     if (!existingBrand) {
-      return new NextResponse("Brand not found or unauthorized", {
-        status: 404,
-      });
+      return new NextResponse("Brand not found or unauthorized", { status: 404 });
     }
 
-    // ✅ Generate the brand book using the utility
-    const brandBook = await generateGeminiText(
-      `Generate a brand book for the following brand: ${JSON.stringify(existingBrand)}`,
-      "gemini-1.5-flash" // Specify model if needed
-    );
+    const prompt = `Generate a brand book for ${existingBrand.name} with mission, vision, values, and personality traits.`;
+
+    const output = await generateGeminiText(prompt);
 
     // ✅ Update the brand with the generated brand book content
     await prisma.brand.update({
       where: { id: brandId },
       data: {
-        brandBook,
+        brandBook: output,
       },
     });
 
-    return NextResponse.json({ success: true, brandBook });
+    return NextResponse.json({ brandBook: output });
   } catch (error: any) {
     console.error("Error generating brand book:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
