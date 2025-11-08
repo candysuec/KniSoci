@@ -15,16 +15,12 @@ export async function POST(req: Request) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
+    const { brandId, answers } = await req.json(); // 'answers' will be the input from the discovery wizard
+
     // Verify that the brand belongs to the logged-in user
     const existingBrand = await prisma.brand.findUnique({
       where: { id: brandId, userId: session.user.id },
     });
-
-    if (!existingBrand) {
-      return new NextResponse("Brand not found or unauthorized", { status: 404 });
-    }
-
-    const { brandId, answers } = await req.json(); // 'answers' will be the input from the discovery wizard
 
     const prompt = `
       Based on the following brand discovery answers, generate a comprehensive brand DNA:
