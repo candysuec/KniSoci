@@ -1,19 +1,11 @@
 "use client";
-
-import { useEffect, useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Wrench, Lock, FileText, BookOpen, Code, HardDrive, Zap } from "lucide-react";
-<<<<<<< HEAD
-=======
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
->>>>>>> 34b84bf (feat: Add syntax highlighting for codebase references in SelfRepairDashboard. Implemented syntax highlighting for code snippets in the "Codebase Check" section of the SelfRepairDashboard using . This improves readability and visual presentation of deprecated references. Installed  and its dependencies. Integrated  component with  style.)
+import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import DailySummaryButton from "@/components/DailySummaryButton";
 import SelfRepairTrend from "@/components/SelfRepairTrend";
 import WeeklyRollupCard from "@/components/WeeklyRollupCard";
-import LogPanel from "@/components/LogPanel";
 
 interface SelfRepairReport {
   timestamp: string;
