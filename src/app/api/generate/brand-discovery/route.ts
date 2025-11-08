@@ -34,7 +34,7 @@ export async function POST(req: Request) {
       model: "gemini-2.5-flash", // Changed model
       contents: [{ role: "user", parts: [{ text: prompt }] }],
     });
-    const response = await result.response;
+    const response = await result;
     const text = response.text();
 
     const parsed = JSON.parse(text);
