@@ -1,0 +1,50 @@
+"use client";
+import { Button } from "@/components/ui/button";
+import { RefreshCw, Wrench, Lock, FileText, BookOpen, Code, HardDrive, Zap } from "lucide-react";
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import DailySummaryButton from "@/components/DailySummaryButton";
+import SelfRepairTrend from "@/components/SelfRepairTrend";
+import WeeklyRollupCard from "@/components/WeeklyRollupCard";
+
+interface SelfRepairReport {
+  timestamp: string;
+  mode: string;
+  overall: string;
+  checks: {
+    codebase?: any;
+    environment?: any;
+    sdk?: any;
+  };
+}
+
+export default function SelfRepairDashboard() {
+  const [data, setData] = useState<SelfRepairReport | null>({
+    timestamp: new Date().toLocaleString(),
+    mode: "development",
+    overall: "✅ All systems nominal",
+    checks: {
+      codebase: { message: "✅ No deprecated references found", deprecatedReferences: 0 },
+      environment: { file: ".env.local", message: "✅ All required environment variables set" },
+      sdk: { version: "0.24.1", message: "✅ SDK connected", response: "Gemini 2.5 Flash" },
+    },
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [authorized, setAuthorized] = useState(true); // Temporarily set to true
+  const [keyInput, setKeyInput] = useState("");
+
+  // Comment out useEffect to prevent API call and login logic while using mock data
+  // useEffect(() => {
+  //   const storedKey = localStorage.getItem("adminKey");
+  //   if (storedKey) {
+  //     setAuthorized(true);
+  //     fetchReport(false, storedKey);
+  //   }
+  // }, []);
+
+  // Comment out fetchReport, handleLogin, handleLogout for mock data
+  // const fetchReport = async (repair = false, key?: string) => {
+                                          [ Read 395 lines ]
+^G Help       ^O Write Out  ^W Where Is   ^K Cut        ^T Execute    ^C Location   M-U Undo
+^X Exit       ^R Read File  ^\ Replace    ^U Paste      ^J Justify    ^/ Go To Line M-E Redo
