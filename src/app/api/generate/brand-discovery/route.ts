@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { PrismaClient } from "@prisma/client";
-import { callGeminiApi } from "@/lib/geminiUtils";
+import { generateGeminiText } from "@/lib/geminiUtils";
 
 const prisma = new PrismaClient();
 
@@ -29,10 +29,7 @@ export async function POST(req: Request) {
       Return the response as a JSON object with keys: mission, vision, values (array of strings), targetAudience, usp, personalityTraits (array of strings).
     `;
 
-    const text = await callGeminiApi({
-      modelName: "gemini-2.5-flash",
-      prompt: prompt,
-    });
+    const text = await generateGeminiText(prompt, "gemini-2.5-flash");
 
     const parsed = JSON.parse(text);
 
