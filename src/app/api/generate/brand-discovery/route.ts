@@ -34,11 +34,7 @@ export async function POST(req: Request) {
       model: "gemini-2.5-flash", // Changed model
       contents: [{ role: "user", parts: [{ text: prompt }] }],
     });
-    const geminiResponse = await result.response;
-    if (!geminiResponse) {
-      throw new Error("Gemini API did not return a response.");
-    }
-    const text = geminiResponse.text();
+    const geminiResponse = await result.response.text();
 
     const parsed = JSON.parse(text);
 
