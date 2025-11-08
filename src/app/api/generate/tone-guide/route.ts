@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
-import { GoogleGenAI } from "@google/genai"; // Changed import
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { PrismaClient } from "@prisma/client";
+import { callGeminiApi } from "@/lib/geminiUtils";
 
 const prisma = new PrismaClient();
-const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! }); // Changed instantiation
 
 export async function POST(req: Request) {
   try {
@@ -52,11 +51,10 @@ export async function POST(req: Request) {
       Return the response as a Markdown formatted string, suitable for direct display.
     `;
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); // Changed model
-
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    const text = await callGeminiApi({
+      modelName: "gemini-2.5-flash", // Changed model
+      prompt: prompt,
+    });
 
     // The tone guide will be a long string, so we'll store it as a String? in the database
     await prisma.brand.update({

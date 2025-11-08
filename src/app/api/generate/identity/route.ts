@@ -1,15 +1,11 @@
 import { NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+import { callGeminiApi } from "@/lib/geminiUtils";
 
 export async function POST(req: Request) {
   try {
     const { brandDescription, brandId } = await req.json();
 
     console.log("Received body for identity generation:", { brandDescription, brandId });
-
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
     const prompt = `
       Given the following brand description, generate a mission statement,
@@ -19,9 +15,10 @@ export async function POST(req: Request) {
       Description: "${brandDescription}"
     `;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    const text = await callGeminiApi({
+      modelName: "gemini-1.5-pro",
+      prompt: prompt,
+    });
 
     console.log("Raw Gemini response:", text);
 

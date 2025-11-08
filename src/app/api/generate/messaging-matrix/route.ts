@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
-import { GoogleGenAI } from "@google/genai"; // Changed import
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { PrismaClient } from "@prisma/client";
+import { callGeminiApi } from "@/lib/geminiUtils";
 
 const prisma = new PrismaClient();
-const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! }); // Changed instantiation
 
 export async function POST(req: Request) {
   try {
@@ -49,11 +48,10 @@ export async function POST(req: Request) {
       Return the response as a JSON object with keys: masterTagline, elevatorPitch (object with 15s, 30s, 60s keys), boilerplate, benefitStack (array of objects with title and description), narrativeThemes (array of strings), sayDontSay (object with say and dontSay arrays of strings).
     `;
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); // Changed model
-
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    const text = await callGeminiApi({
+      modelName: "gemini-2.5-flash", // Changed model
+      prompt: prompt,
+    });
 
     const parsed = JSON.parse(text);
 

@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { PrismaClient } from "@prisma/client";
+import { callGeminiApi } from "@/lib/geminiUtils";
 
 const prisma = new PrismaClient();
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!); // Ensure GEMINI_API_KEY is set
 
 export async function POST(req: Request) {
   try {
@@ -56,11 +55,10 @@ export async function POST(req: Request) {
       Return the response as a JSON object with keys: score (number), feedback (string).
     `;
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" }); // Using gemini-1.5-pro for detailed generation
-
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    const text = await callGeminiApi({
+      modelName: "gemini-1.5-pro", // Using gemini-1.5-pro for detailed generation
+      prompt: prompt,
+    });
 
     const parsed = JSON.parse(text);
 
