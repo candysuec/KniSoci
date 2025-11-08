@@ -20,14 +20,6 @@ export async function POST(req: Request) {
         id: brandId,
         userId: session.user.id,
       },
-      include: {
-        // Include all relevant brand data for context
-        messagingMatrix: true,
-        slogans: true,
-        colorPalettes: true,
-        logoIdeas: true,
-        generatedLogoImage: true,
-      },
     });
 
     // ✅ Handle case where brand isn’t found or user doesn’t own it
