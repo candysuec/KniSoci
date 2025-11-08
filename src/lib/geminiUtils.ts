@@ -8,7 +8,7 @@ export async function generateGeminiText(
   prompt: string,
   modelName = "gemini-1.5-flash"
 ): Promise<string> {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
   if (!apiKey) throw new Error("GEMINI_API_KEY is missing from environment variables.");
 
   const genAI = new GoogleGenerativeAI(apiKey);
