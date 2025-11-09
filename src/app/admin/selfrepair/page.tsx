@@ -13,6 +13,7 @@ import LogPanel from "@/components/LogPanel";
 import DailySummaryButton from "@/components/DailySummaryButton";
 import SelfRepairTrend from "@/components/SelfRepairTrend";
 import WeeklyRollupCard from "@/components/WeeklyRollupCard";
+import { useSession } from "next-auth/react"; // Import useSession
 
 interface SelfRepairReport {
   timestamp: string;
@@ -26,6 +27,10 @@ interface SelfRepairReport {
 }
 
 export default function SelfRepairDashboard() {
+  const { data: session, status } = useSession(); // Get session data
+  const isAdmin = session?.user?.role === "ADMIN";
+  const isAuthenticated = status === "authenticated";
+
   const [data, setData] = useState<SelfRepairReport | null>({
     timestamp: new Date().toLocaleString(),
     mode: "development",
@@ -38,16 +43,20 @@ export default function SelfRepairDashboard() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [authorized, setAuthorized] = useState(false);
-  const [keyInput, setKeyInput] = useState("");
 
   // === AUTH + FETCH LOGIC ===
-  const fetchReport = async (repair = false, key?: string) => {
-    const token = key || localStorage.getItem("adminKey");
-    if (!token) {
-      setError("No admin key found");
+  const fetchReport = async (repair = false) => {
+    if (!isAdmin) {
+      setError("Unauthorized - Not an admin");
       return;
     }
+
+    const token = process.env.NEXT_PUBLIC_ADMIN_ACCESS_KEY; // Use NEXT_PUBLIC_ADMIN_ACCESS_KEY
+    if (!token) {
+      setError("ADMIN_ACCESS_KEY not configured");
+      return;
+    }
+
     setLoading(true);
     setError(null);
     try {
@@ -65,29 +74,13 @@ export default function SelfRepairDashboard() {
     }
   };
 
-  const handleLogin = () => {
-    if (!keyInput.trim()) {
-      setError("Please enter your admin key.");
-      return;
-    }
-    localStorage.setItem("adminKey", keyInput.trim());
-    setAuthorized(true);
-    fetchReport(false, keyInput.trim());
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("adminKey");
-    setAuthorized(false);
-    setData(null);
-  };
-
   useEffect(() => {
-    const storedKey = localStorage.getItem("adminKey");
-    if (storedKey) {
-      setAuthorized(true);
-      fetchReport(false, storedKey);
+    if (isAuthenticated && isAdmin) {
+      fetchReport();
+    } else if (status === "unauthenticated") {
+      setError("Please log in as an administrator.");
     }
-  }, []);
+  }, [isAuthenticated, isAdmin, status]);
 
   const statusColor = (msg: string) => {
     if (msg.includes("✅")) return "text-green-600";
@@ -125,41 +118,16 @@ export default function SelfRepairDashboard() {
     </motion.div>
   );
 
-  // === AUTH SCREEN ===
-  if (!authorized) {
+  // === AUTH SCREEN / ERROR MESSAGE ===
+  if (!isAuthenticated || !isAdmin) {
     return (
       <DashboardLayout>
         <div className="flex flex-col items-center justify-center p-6">
           <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
             <Card className="p-6 w-96 text-center space-y-4">
               <Lock className="h-8 w-8 mx-auto text-gray-500" />
-              <h1 className="text-2xl font-bold">Admin Login</h1>
-              <p className="text-gray-600 text-sm">
-                Enter your <code>ADMIN_ACCESS_KEY</code> to access the dashboard.
-              </p>
-              <input
-                type="password"
-                value={keyInput}
-                onChange={(e) => setKeyInput(e.target.value)}
-                placeholder="Enter Admin Key"
-                className="w-full border rounded-lg p-2 text-center outline-none focus:ring focus:ring-blue-300"
-              />
-<Button
-  onClick={() => {
-    if (!keyInput.trim()) {
-      setError("Please enter your admin key.");
-      return;
-    }
-    localStorage.setItem("adminKey", keyInput.trim());
-    setAuthorized(true);
-    fetchReport(false, keyInput.trim());
-  }}
-  className="w-full"
->
-  Unlock Dashboard
-</Button>
-
-              {error && <p className="text-red-600 text-sm">{error}</p>}
+              <h1 className="text-2xl font-bold">Access Denied</h1>
+              <p className="text-red-600 text-sm">{error || "You do not have administrator privileges to view this page."}</p>
             </Card>
           </motion.div>
         </div>

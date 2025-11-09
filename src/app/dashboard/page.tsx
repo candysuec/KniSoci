@@ -1,120 +1,45 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react"; // Import useMemo
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input"; // Import Input component
-import { useRouter } from "next/navigation";
-import DashboardLayout from "@/components/shared/DashboardLayout";
-import { PlusCircle, LayoutDashboard, Search } from "lucide-react"; // Import Search icon
-
-interface Brand {
-  id: string;
-  name: string;
-  description?: string;
-}
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Sidebar } from "./components/Sidebar";
+import { TopBar } from "./components/TopBar";
+import { ModuleCard } from "./components/ModuleCard";
+import { modules } from "./data/modules";
 
 export default function DashboardPage() {
-  const [brands, setBrands] = useState<Brand[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState(""); // New state for search query
-  const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
+  const [greeting, setGreeting] = useState("Welcome");
 
   useEffect(() => {
-    const fetchBrands = async () => {
-      try {
-        const res = await fetch("/api/brands");
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
-        const data = await res.json();
-        setBrands(data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchBrands();
+    const hour = new Date().getHours();
+    if (hour < 12) setGreeting("Good morning");
+    else if (hour < 18) setGreeting("Good afternoon");
+    else setGreeting("Good evening");
   }, []);
 
-  // Filtered brands based on search query
-  const filteredBrands = useMemo(() => {
-    if (!searchQuery) {
-      return brands;
-    }
-    return brands.filter(
-      (brand) =>
-        brand.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (brand.description && brand.description.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
-  }, [brands, searchQuery]);
-
-  if (loading) {
-    return (
-      <DashboardLayout>
-        <div className="p-6 text-center">Loading brands...</div>
-      </DashboardLayout>
-    );
-  }
-
-  if (error) {
-    return (
-      <DashboardLayout>
-        <div className="p-6 text-center text-red-500">Error: {error}</div>
-      </DashboardLayout>
-    );
-  }
-
   return (
-    <DashboardLayout>
-      <div className="p-6 max-w-6xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Your Brands</h1>
-          <Button onClick={() => router.push("/brands/new")}>Create New Brand</Button>
-        </div>
+    <div className="flex min-h-screen bg-gradient-to-b from-brand-slate to-black font-sans text-gray-100">
+      {/* Sidebar */}
+      <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
 
-        {/* Search Input */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input
-            type="text"
-            placeholder="Search brands..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 pr-3 py-2 border rounded-md w-full"
-          />
-        </div>
+      {/* Main content area */}
+      <div className="flex-1 flex flex-col">
+        <TopBar greeting={greeting} toggleSidebar={() => setIsOpen(!isOpen)} />
 
-        {filteredBrands.length === 0 ? (
-          <div className="flex flex-col items-center justify-center p-10 border-2 border-dashed rounded-lg text-gray-500">
-            <PlusCircle className="h-12 w-12 mb-4 text-gray-400" />
-            <p className="text-xl font-semibold mb-2">No brands found</p>
-            <p className="mb-4">Try adjusting your search or create a new brand.</p>
-            <Button onClick={() => router.push("/brands/new")}>
-              <PlusCircle className="mr-2 h-4 w-4" /> Create New Brand
-            </Button>
-          </div>
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filteredBrands.map((brand) => (
-              <Card key={brand.id} className="shadow-sm hover:shadow-md transition-shadow">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-lg font-semibold">{brand.name}</CardTitle>
-                  <LayoutDashboard className="h-5 w-5 text-gray-400" />
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 mb-4">{brand.description}</p>
-                  <Button onClick={() => router.push(`/brand/${brand.id}`)}>
-                    View Brand Details
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+        <main className="p-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 bg-white/5 backdrop-blur-lg rounded-xl border border-white/10">
+          {modules.map((mod) => (
+            <motion.div
+              key={mod.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: mod.delay }}
+            >
+              <ModuleCard {...mod} />
+            </motion.div>
+          ))}
+        </main>
       </div>
-    </DashboardLayout>
+    </div>
   );
 }

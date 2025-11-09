@@ -1,0 +1,42 @@
+export const modules = [
+  {
+    id: "1",
+    title: "AI Brand Discovery",
+    description: "Explore your unique brand identity and voice.",
+    gradient: "from-brand-blue/90 to-sky-400/70",
+    href: "/dashboard/branding",
+    delay: 0.1,
+  },
+  {
+    id: "2",
+    title: "Brand Book Generator",
+    description: "Create a cohesive visual identity automatically.",
+    gradient: "from-brand-silver/70 to-brand-blue/70",
+    href: "/dashboard/brandbook",
+    delay: 0.2,
+  },
+  {
+    id: "3",
+    title: "Self Repair & Diagnostics",
+    description: "Audit and optimize your brand performance.",
+    gradient: "from-cyan-500/80 to-brand-slate/60",
+    href: "/dashboard/selfrepair",
+    delay: 0.3,
+  },
+  {
+    id: "4",
+    title: "Analytics & Insights",
+    description: "Track growth, engagement, and AI-driven insights.",
+    gradient: "from-brand-blue/80 to-brand-silver/60",
+    href: "/dashboard/analytics",
+    delay: 0.4,
+  },
+  {
+    id: "5",
+    title: "AI Campaign Assistant",
+    description: "Generate smart content and social strategies.",
+    gradient: "from-indigo-500/80 to-brand-silver/70",
+    href: "/dashboard/campaigns",
+    delay: 0.5,
+  },
+];

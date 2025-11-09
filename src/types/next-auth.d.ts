@@ -1,4 +1,5 @@
 import NextAuth, { DefaultSession } from "next-auth";
+import { UserRole } from "@prisma/client"; // Import UserRole enum from Prisma
 
 declare module "next-auth" {
   /**
@@ -7,6 +8,7 @@ declare module "next-auth" {
   interface Session {
     user: {
       id: string;
+      role: UserRole; // Add role to the session user object
     } & DefaultSession["user"];
   }
 
@@ -16,6 +18,7 @@ declare module "next-auth" {
    */
   interface User {
     id: string;
+    role: UserRole; // Add role to the user object
   }
 }
 
@@ -23,5 +26,6 @@ declare module "next-auth/jwt" {
   /** Returned by the `jwt` callback and `getToken`, when using JWT sessions */
   interface JWT {
     id: string;
+    role: UserRole; // Add role to the JWT token
   }
 }

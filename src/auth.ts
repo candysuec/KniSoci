@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, UserRole } from "@prisma/client";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import NextAuth, { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
@@ -14,7 +14,7 @@ export const authOptions: AuthOptions = {
     }),
   ],
   session: {
-    strategy: "jwt",
+    strategy: "database",
   },
   callbacks: {
     async jwt({ token, user, account, profile }) {
@@ -24,6 +24,7 @@ export const authOptions: AuthOptions = {
       console.log("JWT Callback - profile:", profile);
       if (user) {
         token.id = user.id;
+        token.role = user.role; // Add user role to the token
       }
       return token;
     },
@@ -33,6 +34,7 @@ export const authOptions: AuthOptions = {
       console.log("Session Callback - user:", user);
       if (session.user) {
         session.user.id = token.id as string;
+        session.user.role = token.role as UserRole; // Cast to UserRole
       }
       return session;
     },

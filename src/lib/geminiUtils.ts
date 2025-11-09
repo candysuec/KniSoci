@@ -6,7 +6,7 @@ import { GoogleGenerativeAI, GenerativeModel, GenerateContentResult } from "@goo
  */
 export async function generateGeminiText(
   prompt: string,
-  modelName = "gemini-1.5-flash"
+  modelName = "gemini-pro-latest"
 ): Promise<string> {
   const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
   if (!apiKey) throw new Error("GEMINI_API_KEY is missing from environment variables.");

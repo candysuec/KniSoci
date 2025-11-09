@@ -13,12 +13,15 @@ export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     const userId = session?.user?.id || null; // Get userId from session
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
 
     const { brandId } = await req.json();
     if (!brandId) return new NextResponse("Missing brandId", { status: 400 });
 
     const brand = await prisma.brand.findUnique({
-      where: { id: brandId, userId: userId as string }, // Ensure brand belongs to user
+      where: { id: brandId, userId: userId }, // Ensure brand belongs to user
     });
 
     if (!brand) return new NextResponse("Brand not found", { status: 404 });
