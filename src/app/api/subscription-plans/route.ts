@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from "@/lib/db";
 
 export async function GET() {
   try {
-    const plans = await prisma.subscriptionPlan.findMany();
+    const plans = await (prisma as any).subscriptionPlan.findMany();
     return NextResponse.json(plans);
   } catch (error: any) {
     console.error("Error fetching subscription plans:", error);
@@ -14,7 +12,7 @@ export async function GET() {
       { status: 500 }
     );
   } finally {
-    await prisma.$disconnect();
+    // No need to disconnect if using a singleton Prisma client
   }
 }
 
@@ -29,7 +27,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const newPlan = await prisma.subscriptionPlan.create({
+    const newPlan = await (prisma as any).subscriptionPlan.create({
       data: {
         name,
         description,
@@ -49,6 +47,6 @@ export async function POST(req: Request) {
       { status: 500 }
     );
   } finally {
-    await prisma.$disconnect();
+    // No need to disconnect if using a singleton Prisma client
   }
 }

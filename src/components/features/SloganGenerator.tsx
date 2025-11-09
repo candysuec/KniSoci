@@ -22,7 +22,7 @@ interface SloganGeneratorProps {
 }
 
 export function SloganGenerator({ brand }: SloganGeneratorProps) {
-  const [input, setInput] = useState(brand.description);
+  const [input, setInput] = useState(brand.description || '');
   const [slogans, setSlogans] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
@@ -30,7 +30,7 @@ export function SloganGenerator({ brand }: SloganGeneratorProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
-    setInput(brand.description);
+    setInput(brand.description || '');
     if (brand.slogans) {
       setSlogans(brand.slogans as string[]);
     } else {

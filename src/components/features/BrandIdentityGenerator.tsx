@@ -22,7 +22,7 @@ interface BrandIdentityGeneratorProps {
 }
 
 export function BrandIdentityGenerator({ brand }: BrandIdentityGeneratorProps) {
-  const [input, setInput] = useState(brand.description);
+  const [input, setInput] = useState(brand.description || '');
   const [result, setResult] = useState({
     mission: brand.mission || '',
     vision: brand.vision || '',
@@ -34,7 +34,7 @@ export function BrandIdentityGenerator({ brand }: BrandIdentityGeneratorProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
-    setInput(brand.description);
+    setInput(brand.description || '');
     setResult({
       mission: brand.mission || '',
       vision: brand.vision || '',

@@ -1,6 +1,8 @@
 // src/app/api/generate/selfrepair/route.ts
 import { NextResponse } from "next/server";
 import { runSelfRepair } from "@/lib/selfrepair";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export const runtime = "nodejs"; // Node runtime required for fs operations within runSelfRepair
 
@@ -26,11 +28,14 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const url = new URL(request.url);
-  const dryrun = url.searchParams.get("dryrun") === "true";
-  const repair = url.searchParams.get("repair") === "true";
+  const dryrun = url.searchParams.get("dryrun") === "true"; // This is unused in the new runSelfRepair
+  const repair = url.searchParams.get("repair") === "true"; // This is unused in the new runSelfRepair
 
   try {
-    const result = await runSelfRepair({ repair: repair });
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id || undefined; // Get userId from session
+
+    const result = await runSelfRepair(userId); // Call runSelfRepair with userId
     return NextResponse.json(result);
   } catch (error: any) {
     console.error("[/api/generate/selfrepair POST Error]", error);

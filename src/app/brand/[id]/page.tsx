@@ -151,7 +151,7 @@ export default function BrandPage() {
                 size="sm"
                 onClick={() => {
                   setEditName(brand.name);
-                  setEditDescription(brand.description);
+                  setEditDescription(brand.description || '');
                 }}
               >
                 <Pencil className="mr-2 h-4 w-4" /> Edit Brand

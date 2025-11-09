@@ -1,9 +1,18 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/db";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { sendAlert } from "./alerts/mailer";
 
-const prisma = new PrismaClient();
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!); // Ensure GEMINI_API_KEY is set
+// Define a custom interface for ConsistencyScore
+interface ConsistencyScore {
+  id: string;
+  brandId: string;
+  score: number;
+  feedback: string;
+  analyzedContent: string;
+  timestamp: Date;
+}
+
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY!); // Use correct env var
 
 export async function sendWeeklySummary() {
   try {
@@ -13,16 +22,17 @@ export async function sendWeeklySummary() {
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
     // Fetch all brands
-    const brands = await prisma.brand.findMany({
-      select: { id: true, name: true, consistencyScores: { where: { timestamp: { gte: oneWeekAgo } }, orderBy: { timestamp: "asc" } } },
+    const brands = await (prisma.brand as any).findMany({
+      select: { id: true, name: true }, // Select basic brand fields
+      include: { consistencyScores: { where: { timestamp: { gte: oneWeekAgo } }, orderBy: { timestamp: "asc" } } },
     });
 
     let weeklySummaryContent = "";
 
     for (const brand of brands) {
       if (brand.consistencyScores.length > 0) {
-        const scores = brand.consistencyScores.map(s => s.score);
-        const averageScore = scores.reduce((sum, s) => sum + s, 0) / scores.length;
+        const scores = brand.consistencyScores.map((s: ConsistencyScore) => s.score);
+        const averageScore = scores.reduce((sum: number, s: number) => sum + s, 0) / scores.length;
         const initialScore = scores[0];
         const finalScore = scores[scores.length - 1];
         const change = finalScore - initialScore;

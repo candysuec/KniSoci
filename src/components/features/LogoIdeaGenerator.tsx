@@ -21,7 +21,7 @@ interface LogoIdeaGeneratorProps {
 }
 
 export function LogoIdeaGenerator({ brand }: LogoIdeaGeneratorProps) {
-  const [input, setInput] = useState(brand.description);
+  const [input, setInput] = useState(brand.description || '');
   const [logoIdeas, setLogoIdeas] = useState<string[]>([]);
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(brand.generatedLogoImage || null);
   const [isLoading, setIsLoading] = useState(false);
@@ -31,7 +31,7 @@ export function LogoIdeaGenerator({ brand }: LogoIdeaGeneratorProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
-    setInput(brand.description);
+    setInput(brand.description || '');
     if (brand.logoIdeas) {
       setLogoIdeas(brand.logoIdeas as string[]);
     } else {
@@ -47,7 +47,7 @@ export function LogoIdeaGenerator({ brand }: LogoIdeaGeneratorProps) {
     setLogoIdeas([]);
 
     try {
-      const truncatedInput = input.substring(0, 1000); // Truncate input to 1000 characters
+      const truncatedInput = (input || '').substring(0, 1000); // Truncate input to 1000 characters
       const response = await fetch('/api/generate/logo-ideas', {
         method: 'POST',
         headers: {

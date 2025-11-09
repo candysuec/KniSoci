@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/db";
 import { generateGeminiText } from "@/lib/geminiUtils";
-
-const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
   try {
@@ -57,7 +55,7 @@ export async function POST(req: Request) {
     const parsed = JSON.parse(text);
 
     // Save the consistency score to the database
-    await prisma.consistencyScore.create({
+    await (prisma as any).consistencyScore.create({
       data: {
         brandId: brandId,
         score: parsed.score,

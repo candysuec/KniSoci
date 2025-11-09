@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
-
-const prisma = new PrismaClient();
 
 export async function GET(req: Request) {
   try {
@@ -13,7 +11,7 @@ export async function GET(req: Request) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const usageRecords = await prisma.usageRecord.findMany({
+    const usageRecords = await (prisma as any).usageRecord.findMany({
       where: { userId: session.user.id },
       orderBy: { timestamp: "desc" },
     });
@@ -26,7 +24,7 @@ export async function GET(req: Request) {
       { status: 500 }
     );
   } finally {
-    await prisma.$disconnect();
+    // No need to disconnect if using a singleton Prisma client
   }
 }
 
@@ -47,7 +45,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const newUsageRecord = await prisma.usageRecord.create({
+    const newUsageRecord = await (prisma as any).usageRecord.create({
       data: {
         userId: session.user.id,
         feature,
@@ -63,6 +61,6 @@ export async function POST(req: Request) {
       { status: 500 }
     );
   } finally {
-    await prisma.$disconnect();
+    // No need to disconnect if using a singleton Prisma client
   }
 }
