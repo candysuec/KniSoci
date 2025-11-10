@@ -47,7 +47,7 @@ export default function ContentCalendarPage() {
     }
   }, [selectedBrandId, brands]);
 
-  const postIdeas: PostIdea[] = selectedBrand?.postIdeas as PostIdea[] || [];
+  const postIdeas: PostIdea[] = selectedBrand?.postIdeas as unknown as PostIdea[] || [];
   const hasPostIdeas = postIdeas.length > 0;
 
   // Simple grouping by pillar for a calendar-like view
