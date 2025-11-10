@@ -90,15 +90,15 @@ model Brand {
   typographyPairings Json? // Store as JSON array of objects
   messagingGuide     String? // Store as Markdown string
   personaSheets      String? // Store as Markdown string
-    imageryAndArtDirection Json? // Store as JSON object for mood boards, photography, illustration
-      pressKit               String? // Store as Markdown string
-          salesDeck              String? // Store as Markdown string
-            websiteCopy            String? // Store as Markdown string
-            notionPageId           String?
-              createdAt              DateTime @default(now())
-              updatedAt              DateTime @updatedAt
-              userId                 String
-              user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  imageryAndArtDirection Json? // Store as JSON object for mood boards, photography, illustration
+  pressKit               String? // Store as Markdown string
+  salesDeck              String? // Store as Markdown string
+  websiteCopy            String? // Store as Markdown string
+  notionPageId           String?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  userId                 String
+  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@index([userId])
 }
 

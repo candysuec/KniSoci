@@ -1,5 +1,6 @@
 "use client";
 
+import { Brand } from '@prisma/client';
 import { useState } from 'react';
 import { ArrowLeft, Wand2, Download } from "lucide-react"; // Added Download icon
 import Link from "next/link";
