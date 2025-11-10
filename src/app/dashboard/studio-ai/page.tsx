@@ -1,0 +1,1 @@
+export default function StudioAiPage() { return <h1 className="text-4xl font-bold text-brand-silver">Studio AI</h1>; }

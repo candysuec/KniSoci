@@ -1,0 +1,1 @@
+export default function BrandPage() { return <h1 className="text-4xl font-bold text-brand-silver">Brand</h1>; }

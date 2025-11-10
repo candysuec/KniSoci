@@ -19,9 +19,6 @@ export const metadata: Metadata = {
   description: "Your AI-powered branding assistant",
 };
 
-import Header from "@/components/shared/Header";
-import Sidebar from "@/components/shared/Sidebar";
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -33,13 +30,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans`}
       >
         <Providers> {/* Wrap children with Providers */}
-          <div className="flex flex-col h-screen">
-            <Header />
-            <div className="flex flex-1">
-              <Sidebar />
-              <main className="flex-1 overflow-y-auto p-8">{children}</main>
-            </div>
-          </div>
+          {children}
         </Providers>
         <Toaster /> {/* Add Toaster component here */}
       </body>

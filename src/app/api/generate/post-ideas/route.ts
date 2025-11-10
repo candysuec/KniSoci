@@ -1,88 +1,84 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/db";
 import { generateGeminiText } from "@/lib/geminiUtils";
 
-const prisma = new PrismaClient();
+const generatePostIdeasPrompt = (brand: { name: string, targetAudience?: string | null, contentPillars?: any }) => {
+  const brandInfo = {
+    name: brand.name,
+    targetAudience: brand.targetAudience,
+    contentPillars: brand.contentPillars,
+  };
+
+  return `
+    As a creative social media strategist, generate 10 diverse and engaging social media post ideas for the following brand, based on its content pillars.
+
+    Brand Info: ${JSON.stringify(brandInfo, null, 2)}
+
+    Your output MUST be a single, valid JSON array of objects. Do not include any text, explanation, or markdown formatting before or after the JSON object.
+
+    Each object in the array should represent a single post idea and have the following structure:
+    {
+      "pillar": "The title of the content pillar this post relates to.",
+      "format": "The suggested format for the post (e.g., 'Instagram Carousel', 'TikTok Video', 'LinkedIn Article', 'Twitter Thread').",
+      "hook": "A compelling, attention-grabbing first line or question for the post.",
+      "body": "A brief 2-3 sentence description of the post's content or narrative.",
+      "cta": "A clear and simple Call to Action for the post (e.g., 'Link in bio!', 'What are your thoughts?', 'Share your story.')."
+    }
+  `;
+};
 
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-
-    if (!session || !session.user || !session.user.id) {
+    if (!session?.user?.id) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const { brandId, topics, platforms } = await req.json(); // 'topics' and 'platforms' will be input for post ideas
-
+    const { brandId } = await req.json();
     if (!brandId) {
-      return NextResponse.json(
-        { error: "Brand ID is required." },
-        { status: 400 }
-      );
+      return new NextResponse("Brand ID is required", { status: 400 });
     }
 
-    // Verify that the brand belongs to the logged-in user
-    const existingBrand = await prisma.brand.findUnique({
+    const brand = await prisma.brand.findFirst({
       where: { id: brandId, userId: session.user.id },
-      include: { 
-        // Include brand DNA and messaging matrix for context
-        // This assumes these fields are already populated
-        // mission: true, vision: true, values: true, targetAudience: true, usp: true, personalityTraits: true,
-        // messagingMatrix: true,
-      }
     });
 
-    if (!existingBrand) {
+    if (!brand) {
       return new NextResponse("Brand not found or unauthorized", { status: 404 });
     }
+    if (!brand.contentPillars) {
+      return new NextResponse("Content Pillars must be generated before creating post ideas.", { status: 400 });
+    }
 
-    // TODO: Construct a detailed prompt for Gemini based on existingBrand, topics, and platforms
-    const prompt = `
-      Given the following brand information, generate 5 unique social media post ideas.
-      Focus on the following topics: ${topics ? topics.join(', ') : 'general brand awareness'}.
-      Target platforms: ${platforms ? platforms.join(', ') : 'all major social media platforms'}.
+    const prompt = generatePostIdeasPrompt(brand);
+    const rawOutput = await generateGeminiText(prompt, "gemini-1.5-flash");
 
-      Brand Name: ${existingBrand.name}
-      Brand Description: ${existingBrand.description}
-      ${existingBrand.mission ? `Mission: ${existingBrand.mission}` : ''}
-      ${existingBrand.vision ? `Vision: ${existingBrand.vision}` : ''}
-      ${existingBrand.values ? `Values: ${JSON.stringify(existingBrand.values)}` : ''}
-      ${existingBrand.targetAudience ? `Target Audience: ${existingBrand.targetAudience}` : ''}
-      ${existingBrand.usp ? `Unique Selling Proposition: ${existingBrand.usp}` : ''}
-      ${existingBrand.personalityTraits ? `Personality Traits: ${JSON.stringify(existingBrand.personalityTraits)}` : ''}
-      ${existingBrand.messagingMatrix ? `Messaging Matrix: ${JSON.stringify(existingBrand.messagingMatrix)}` : ''}
+    let postIdeas;
+    try {
+      const jsonString = rawOutput.replace(/```json\n|```/g, "").trim();
+      postIdeas = JSON.parse(jsonString);
+    } catch (e) {
+      console.error("Failed to parse Gemini JSON response for Post Ideas:", e);
+      console.error("Raw AI Output:", rawOutput);
+      return new NextResponse("Failed to process AI response. The output was not valid JSON.", { status: 500 });
+    }
 
-      For each post idea, provide:
-      - A catchy headline
-      - A brief description of the post content
-      - Suggested call to action (CTA)
-      - Relevant hashtags (3-5)
-      - Target platform(s)
-
-      Return the response as a JSON array of objects, where each object represents a post idea.
-    `;
-
-    const text = await generateGeminiText(prompt, "gemini-2.5-flash");
-
-    const parsed = JSON.parse(text);
-
-    await prisma.brand.update({
+    const updatedBrand = await prisma.brand.update({
       where: { id: brandId },
       data: {
-        postIdeas: parsed,
+        postIdeas: postIdeas,
       },
     });
 
-    return NextResponse.json({ brandId, postIdeas: parsed });
+    return NextResponse.json(updatedBrand);
   } catch (error: any) {
-    console.error("❌ Error generating post ideas:", error);
+    console.error("[POST_IDEAS_POST]", error);
     return NextResponse.json(
-      { error: error.message || "Gemini post ideas generation failed." },
+      { error: error.message || "Post ideas generation failed." },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
+

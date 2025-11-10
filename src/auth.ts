@@ -28,13 +28,12 @@ export const authOptions: AuthOptions = {
       }
       return token;
     },
-    async session({ session, token, user }) {
+    async session({ session, user }) {
       console.log("Session Callback - session:", session);
-      console.log("Session Callback - token:", token);
       console.log("Session Callback - user:", user);
       if (session.user) {
-        session.user.id = token.id as string;
-        session.user.role = token.role as UserRole; // Cast to UserRole
+        session.user.id = user.id;
+        session.user.role = user.role; // Cast to UserRole
       }
       return session;
     },
