@@ -15,6 +15,8 @@ import {
   BarChart2,
   ChevronDown,
   X,
+  CheckCheck, // Added CheckCheck icon
+  CalendarDays, // Added CalendarDays icon
 } from "lucide-react";
 
 const navItems = [
@@ -22,8 +24,10 @@ const navItems = [
   { label: "KniHub", href: "/dashboard/knihub", icon: Share2 },
   { label: "Brand", href: "/dashboard/brand", icon: Palette },
   { label: "Social", href: "/dashboard/social", icon: MessageSquare },
+  { label: "Content Calendar", href: "/dashboard/content-calendar", icon: CalendarDays }, // Added Content Calendar
   { label: "Learn", href: "/dashboard/learn", icon: BookOpen },
   { label: "Studio AI", href: "/dashboard/studio-ai", icon: Sparkles },
+  { label: "Consistency Checker", href: "/dashboard/consistency-checker", icon: CheckCheck }, // Added Consistency Checker
   { label: "Core", href: "/dashboard/core", icon: Cpu },
   {
     label: "Admin",

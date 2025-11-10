@@ -81,6 +81,9 @@ model Brand {
   logoIdeas          Json? // Store as JSON array of strings
   generatedLogoImage String?
   typographyPairings Json? // Store as JSON array of objects
+  messagingGuide     String? // Store as Markdown string
+  personaSheets      String? // Store as Markdown string
+  imageryAndArtDirection Json? // Store as JSON object for mood boards, photography, illustration
   notionPageId       String?
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt

@@ -1,12 +1,4 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { Brand } from "@prisma/client";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ArrowLeft, Wand2 } from "lucide-react";
+import { ArrowLeft, Wand2, Download } from "lucide-react"; // Added Download icon
 import Link from "next/link";
 
 // Helper component for displaying a single DNA item
@@ -198,6 +190,176 @@ const PostIdeasSection = ({ brand, onGenerate, isLoading }: { brand: Brand; onGe
     );
 }
 
+// New component for Logo Ideas
+const LogoIdeasSection = ({ brand, onGenerate, isLoading }: { brand: Brand; onGenerate: () => void; isLoading: boolean; }) => {
+    const ideas = brand.logoIdeas as any[];
+    const hasDna = brand.mission;
+
+    return (
+        <Card className="bg-brand-slate/50 border-slate-800">
+            <CardHeader>
+                <CardTitle className="text-brand-silver">Logo Ideas</CardTitle>
+                <CardDescription className="text-slate-400">
+                    AI-generated concepts for your brand's visual identity.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                {ideas && ideas.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {ideas.map((idea, i) => (
+                            <div key={i} className="bg-slate-900/50 p-4 rounded-lg border border-slate-800">
+                                <h4 className="font-semibold text-brand-blue">{idea.type}</h4>
+                                <p className="text-sm text-slate-300 mt-1">{idea.description}</p>
+                                <p className="text-xs text-slate-400 mt-2 italic">Keywords: {idea.keywords}</p>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-10">
+                        <p className="text-slate-400 mb-6">Generate your Brand DNA first to unlock Logo Ideas.</p>
+                        <Button onClick={onGenerate} disabled={isLoading || !hasDna} className="bg-brand-blue hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed">
+                            <Wand2 className="mr-2 h-4 w-4" />
+                            {isLoading ? "Generating..." : "Generate Logo Ideas"}
+                        </Button>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    );
+}
+
+// New component for Color Palettes
+const ColorPalettesSection = ({ brand, onGenerate, isLoading }: { brand: Brand; onGenerate: () => void; isLoading: boolean; }) => {
+    const palettes = brand.colorPalettes as any[];
+    const hasDna = brand.mission;
+
+    return (
+        <Card className="bg-brand-slate/50 border-slate-800">
+            <CardHeader>
+                <CardTitle className="text-brand-silver">Color Palettes</CardTitle>
+                <CardDescription className="text-slate-400">
+                    AI-generated color schemes to define your brand's visual mood.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                {palettes && palettes.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {palettes.map((palette, i) => (
+                            <div key={i} className="bg-slate-900/50 p-4 rounded-lg border border-slate-800">
+                                <h4 className="font-semibold text-brand-blue">{palette.name}</h4>
+                                <p className="text-sm text-slate-300 mt-1">{palette.description}</p>
+                                <div className="flex gap-2 mt-3">
+                                    {palette.hexCodes.map((hex: string, j: number) => (
+                                        <div key={j} className="w-8 h-8 rounded-full border border-slate-700" style={{ backgroundColor: hex }}></div>
+                                    ))}
+                                </div>
+                                <p className="text-xs text-slate-400 mt-2">{palette.hexCodes.join(', ').toUpperCase()}</p>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-10">
+                        <p className="text-slate-400 mb-6">Generate your Brand DNA first to unlock Color Palettes.</p>
+                        <Button onClick={onGenerate} disabled={isLoading || !hasDna} className="bg-brand-blue hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed">
+                            <Wand2 className="mr-2 h-4 w-4" />
+                            {isLoading ? "Generating..." : "Generate Color Palettes"}
+                        </Button>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    );
+}
+
+// New component for Typography
+const TypographySection = ({ brand, onGenerate, isLoading }: { brand: Brand; onGenerate: () => void; isLoading: boolean; }) => {
+    const pairings = brand.typographyPairings as any[];
+    const hasDna = brand.mission;
+
+    return (
+        <Card className="bg-brand-slate/50 border-slate-800">
+            <CardHeader>
+                <CardTitle className="text-brand-silver">Typography</CardTitle>
+                <CardDescription className="text-slate-400">
+                    AI-generated font pairings for your brand's headings and body text.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                {pairings && pairings.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {pairings.map((pairing, i) => (
+                            <div key={i} className="bg-slate-900/50 p-4 rounded-lg border border-slate-800">
+                                <h4 className="font-semibold text-brand-blue">Heading: {pairing.headingFont}</h4>
+                                <p className="text-sm text-slate-300 mt-1">Body: {pairing.bodyFont}</p>
+                                <p className="text-xs text-slate-400 mt-2 italic">{pairing.description}</p>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-10">
+                        <p className="text-slate-400 mb-6">Generate your Brand DNA first to unlock Typography Pairings.</p>
+                        <Button onClick={onGenerate} disabled={isLoading || !hasDna} className="bg-brand-blue hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed">
+                            <Wand2 className="mr-2 h-4 w-4" />
+                            {isLoading ? "Generating..." : "Generate Typography"}
+                        </Button>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    );
+}
+
+
+// New component for Brand Book
+const BrandBookSection = ({ brand, onGenerate, isLoading }: { brand: Brand; onGenerate: () => void; isLoading: boolean; }) => {
+    const brandBookContent = brand.brandBook;
+    const hasDna = brand.mission;
+
+    const handleDownload = () => {
+        if (brandBookContent) {
+            const element = document.createElement("a");
+            const file = new Blob([brandBookContent], { type: "text/markdown" });
+            element.href = URL.createObjectURL(file);
+            element.download = `${brand.name.replace(/\s/g, '_')}_BrandBook.md`;
+            document.body.appendChild(element); // Required for Firefox
+            element.click();
+            document.body.removeChild(element); // Clean up
+        }
+    };
+
+    return (
+        <Card className="bg-brand-slate/50 border-slate-800">
+            <CardHeader>
+                <CardTitle className="text-brand-silver">Brand Book</CardTitle>
+                <CardDescription className="text-slate-400">
+                    A comprehensive guide to your brand, compiled into a single document.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                {brandBookContent ? (
+                    <div className="space-y-4">
+                        <Button onClick={handleDownload} className="bg-brand-blue hover:bg-blue-700">
+                            <Download className="mr-2 h-4 w-4" />
+                            Download Brand Book (.md)
+                        </Button>
+                        <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-800 max-h-96 overflow-y-auto">
+                            <pre className="text-sm text-slate-300 whitespace-pre-wrap">{brandBookContent}</pre>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="text-center py-10">
+                        <p className="text-slate-400 mb-6">Generate your Brand DNA first to create your Brand Book.</p>
+                        <Button onClick={onGenerate} disabled={isLoading || !hasDna} className="bg-brand-blue hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed">
+                            <Wand2 className="mr-2 h-4 w-4" />
+                            {isLoading ? "Generating..." : "Generate Brand Book"}
+                        </Button>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    );
+}
+
 
 export default function BrandPage() {
   const [brand, setBrand] = useState<Brand | null>(null);
@@ -206,6 +368,12 @@ export default function BrandPage() {
   const [isGeneratingMatrix, setIsGeneratingMatrix] = useState(false);
   const [isGeneratingPillars, setIsGeneratingPillars] = useState(false);
   const [isGeneratingIdeas, setIsGeneratingIdeas] = useState(false);
+  const [isGeneratingBook, setIsGeneratingBook] = useState(false);
+  const [isGeneratingLogoIdeas, setIsGeneratingLogoIdeas] = useState(false); // New state
+  const [isGeneratingColors, setIsGeneratingColors] = useState(false); // New state
+  const [isGeneratingTypography, setIsGeneratingTypography] = useState(false); // New state
+  const [isGeneratingMessagingGuide, setIsGeneratingMessagingGuide] = useState(false); // New state
+  const [isGeneratingPersonaSheets, setIsGeneratingPersonaSheets] = useState(false); // New state
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
@@ -282,6 +450,87 @@ export default function BrandPage() {
     finally { setIsGeneratingIdeas(false); }
   };
 
+  const handleGenerateBook = async () => {
+    setIsGeneratingBook(true);
+    try {
+      await fetch('/api/generate/brand-book', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ brandId: id }),
+      });
+      await fetchBrand();
+    } catch (error) { console.error(error); }
+    finally { setIsGeneratingBook(false); }
+  };
+
+  // New handlers for Logo Ideas, Colors, Typography
+  const handleGenerateLogoIdeas = async () => {
+    setIsGeneratingLogoIdeas(true);
+    try {
+      await fetch('/api/generate/logo-ideas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ brandId: id }),
+      });
+      await fetchBrand();
+    } catch (error) { console.error(error); }
+    finally { setIsGeneratingLogoIdeas(false); }
+  };
+
+  const handleGenerateColors = async () => {
+    setIsGeneratingColors(true);
+    try {
+      await fetch('/api/generate/colors', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ brandId: id }),
+      });
+      await fetchBrand();
+    } catch (error) { console.error(error); }
+    finally { setIsGeneratingColors(false); }
+  };
+
+  const handleGenerateTypography = async () => {
+    setIsGeneratingTypography(true);
+    try {
+      await fetch('/api/generate/typography-match', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ brandId: id }),
+      });
+      await fetchBrand();
+    } catch (error) { console.error(error); }
+    finally { setIsGeneratingTypography(false); }
+  };
+
+  // New handlers for Messaging Guide and Persona Sheets
+  const handleGenerateMessagingGuide = async () => {
+    setIsGeneratingMessagingGuide(true);
+    try {
+      await fetch('/api/generate/messaging-guide', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ brandId: id }),
+      });
+      await fetchBrand();
+    } catch (error) { console.error(error); }
+    finally { setIsGeneratingMessagingGuide(false); }
+  };
+
+  const handleGeneratePersonaSheets = async () => {
+    setIsGeneratingPersonaSheets(true);
+    try {
+      await fetch('/api/generate/persona-sheets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ brandId: id }),
+      });
+      await fetchBrand();
+    } catch (error) { console.error(error); }
+    finally { setIsGeneratingPersonaSheets(false); }
+  };
+
+
   if (isLoading) {
     return <div className="text-center text-slate-400">Loading Brand...</div>;
   }
@@ -313,6 +562,12 @@ export default function BrandPage() {
       <MessagingMatrixSection brand={brand} onGenerate={handleGenerateMatrix} isLoading={isGeneratingMatrix} />
       <ContentPillarsSection brand={brand} onGenerate={handleGeneratePillars} isLoading={isGeneratingPillars} />
       <PostIdeasSection brand={brand} onGenerate={handleGenerateIdeas} isLoading={isGeneratingIdeas} />
+      <LogoIdeasSection brand={brand} onGenerate={handleGenerateLogoIdeas} isLoading={isGeneratingLogoIdeas} />
+      <ColorPalettesSection brand={brand} onGenerate={handleGenerateColors} isLoading={isGeneratingColors} />
+      <TypographySection brand={brand} onGenerate={handleGenerateTypography} isLoading={isGeneratingTypography} />
+      <BrandBookSection brand={brand} onGenerate={handleGenerateBook} isLoading={isGeneratingBook} />
+      <MessagingGuideSection brand={brand} onGenerate={handleGenerateMessagingGuide} isLoading={isGeneratingMessagingGuide} />
+      <PersonaSheetsSection brand={brand} onGenerate={handleGeneratePersonaSheets} isLoading={isGeneratingPersonaSheets} />
 
     </motion.div>
   );

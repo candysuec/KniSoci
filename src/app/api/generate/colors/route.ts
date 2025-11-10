@@ -1,51 +1,83 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client'; // Import PrismaClient
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/auth';
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/auth";
+import { prisma } from "@/lib/db";
 import { generateGeminiText } from "@/lib/geminiUtils";
 
-export async function POST(req: NextRequest) {
-  const prisma = new PrismaClient(); // Instantiate PrismaClient
+const generateColorPalettesPrompt = (brand: { name: string, description?: string | null, personalityTraits?: any, usp?: string | null }) => {
+  const brandInfo = {
+    name: brand.name,
+    description: brand.description,
+    personalityTraits: brand.personalityTraits,
+    usp: brand.usp,
+  };
+
+  return `
+    As a professional brand designer, generate 3 distinct color palettes for the following brand.
+    Each palette should consist of 3-5 hex codes and include a name (e.g., "Primary", "Accent", "Neutral") and a brief description of its mood or purpose.
+
+    Brand Info: ${JSON.stringify(brandInfo, null, 2)}
+
+    Your output MUST be a single, valid JSON array of objects. Do not include any text, explanation, or markdown formatting before or after the JSON object.
+
+    Each object in the array should represent a color palette and have the following structure:
+    {
+      "name": "Name of the palette (e.g., 'Primary', 'Accent', 'Neutral').",
+      "hexCodes": ["#RRGGBB", "#RRGGBB", "#RRGGBB"],
+      "description": "A brief description of the palette's mood or intended use."
+    }
+  `;
+};
+
+export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-
-    if (!session || !session.user || !session.user.id) {
-      return new NextResponse('Unauthorized', { status: 401 });
+    if (!session?.user?.id) {
+      return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const { input, brandId } = await req.json();
-
-    if (!input || !brandId) {
-      return NextResponse.json({ error: 'Input and brandId are required' }, { status: 400 });
+    const { brandId } = await req.json();
+    if (!brandId) {
+      return new NextResponse("Brand ID is required", { status: 400 });
     }
 
-    // Verify that the brand belongs to the logged-in user
-    const existingBrand = await prisma.brand.findUnique({
+    const brand = await prisma.brand.findFirst({
       where: { id: brandId, userId: session.user.id },
     });
 
-    if (!existingBrand) {
-      return new NextResponse('Brand not found or unauthorized', { status: 404 });
+    if (!brand) {
+      return new NextResponse("Brand not found or unauthorized", { status: 404 });
+    }
+    if (!brand.mission) { // Brand DNA is a prerequisite
+      return new NextResponse("Brand DNA must be generated before creating color palettes.", { status: 400 });
     }
 
-    const truncatedInput = input.substring(0, 1000); // Truncate input to 1000 characters
-    const prompt = `Generate 2-3 color palettes (each with 3 hex codes) for a brand described as: "${truncatedInput}". The palettes should match the mood of the brand. Return the response as a JSON array of objects, where each object has a 'name' and 'colors' (an array of hex codes).`;
+    const prompt = generateColorPalettesPrompt(brand);
+    const rawOutput = await generateGeminiText(prompt, "gemini-1.5-flash");
 
-    const text = await generateGeminiText(prompt, "gemini-1.5-flash");
+    let colorPalettes;
+    try {
+      const jsonString = rawOutput.replace(/```json\n|```/g, "").trim();
+      colorPalettes = JSON.parse(jsonString);
+    } catch (e) {
+      console.error("Failed to parse Gemini JSON response for Color Palettes:", e);
+      console.error("Raw AI Output:", rawOutput);
+      return new NextResponse("Failed to process AI response. The output was not valid JSON.", { status: 500 });
+    }
 
-    const result = JSON.parse(text);
-
-    // Update the brand in the database
-    await prisma.brand.update({
+    const updatedBrand = await prisma.brand.update({
       where: { id: brandId },
       data: {
-        colorPalettes: result, // Store the array of color palettes
+        colorPalettes: colorPalettes,
       },
     });
 
-    return NextResponse.json(result);
+    return NextResponse.json(updatedBrand);
   } catch (error: any) {
-    console.error(error);
-    return NextResponse.json({ error: 'An unexpected error occurred.' }, { status: 500 });
+    console.error("[COLOR_PALETTES_POST]", error);
+    return NextResponse.json(
+      { error: error.message || "Color palettes generation failed." },
+      { status: 500 }
+    );
   }
 }

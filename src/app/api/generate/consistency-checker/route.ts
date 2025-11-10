@@ -1,77 +1,77 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
-import prisma from "@/lib/db";
+import { prisma } from "@/lib/db";
 import { generateGeminiText } from "@/lib/geminiUtils";
+
+const generateConsistencyPrompt = (brand: { personalityTraits?: any, values?: any }, textToAnalyze: string) => {
+  const brandInfo = {
+    personalityTraits: brand.personalityTraits,
+    values: brand.values,
+  };
+
+  return `
+    As a brand consistency expert, analyze the following text against the provided brand identity.
+    The brand's identity is defined by these characteristics: ${JSON.stringify(brandInfo, null, 2)}
+
+    The text to analyze is:
+    ---
+    "${textToAnalyze}"
+    ---
+
+    Your task is to provide a consistency score and a brief, constructive reasoning.
+    Your output MUST be a single, valid JSON object. Do not include any text, explanation, or markdown formatting before or after the JSON object.
+
+    The JSON object should have the following structure and keys:
+    {
+      "score": "A number from 0 to 100 representing how well the text aligns with the brand identity.",
+      "reasoning": "A brief, 2-3 sentence explanation for the score, highlighting specific words or phrases that align or misalign with the brand's personality and values."
+    }
+  `;
+};
 
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-
-    if (!session || !session.user || !session.user.id) {
+    if (!session?.user?.id) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
     const { brandId, textToAnalyze } = await req.json();
-
     if (!brandId || !textToAnalyze) {
-      return NextResponse.json(
-        { error: "Brand ID and text to analyze are required." },
-        { status: 400 }
-      );
+      return new NextResponse("Brand ID and text to analyze are required.", { status: 400 });
     }
 
-    // Verify that the brand belongs to the logged-in user
-    const existingBrand = await prisma.brand.findUnique({
+    const brand = await prisma.brand.findFirst({
       where: { id: brandId, userId: session.user.id },
-      // No include for toneGuide, as it's a direct field.
     });
 
-    if (!existingBrand) {
+    if (!brand) {
       return new NextResponse("Brand not found or unauthorized", { status: 404 });
     }
-
-    if (!existingBrand.toneGuide) {
-      return NextResponse.json(
-        { error: "Tone guide not found for this brand. Please generate one first." },
-        { status: 400 }
-      );
+    if (!brand.personalityTraits) {
+      return new NextResponse("Brand DNA must be generated before checking consistency.", { status: 400 });
     }
 
-    // TODO: Construct a detailed prompt for Gemini to analyze consistency
-    const prompt = `
-      Analyze the following text for consistency with the provided brand tone guide.
-      Provide a consistency score (0-100) and detailed feedback on areas of alignment and misalignment.
+    const prompt = generateConsistencyPrompt(brand, textToAnalyze);
+    const rawOutput = await generateGeminiText(prompt, "gemini-1.5-flash");
 
-      Brand Tone Guide: ${existingBrand.toneGuide}
+    let analysis;
+    try {
+      const jsonString = rawOutput.replace(/```json\n|```/g, "").trim();
+      analysis = JSON.parse(jsonString);
+    } catch (e) {
+      console.error("Failed to parse Gemini JSON response for Consistency Checker:", e);
+      console.error("Raw AI Output:", rawOutput);
+      return new NextResponse("Failed to process AI response. The output was not valid JSON.", { status: 500 });
+    }
 
-      Text to Analyze: ${textToAnalyze}
-
-      Return the response as a JSON object with keys: score (number), feedback (string).
-    `;
-
-    const text = await generateGeminiText(prompt, "gemini-1.5-pro");
-
-    const parsed = JSON.parse(text);
-
-    // Save the consistency score to the database
-    await (prisma as any).consistencyScore.create({
-      data: {
-        brandId: brandId,
-        score: parsed.score,
-        feedback: parsed.feedback,
-        analyzedContent: textToAnalyze,
-      },
-    });
-
-    return NextResponse.json({ brandId, analysis: parsed });
+    return NextResponse.json(analysis);
   } catch (error: any) {
-    console.error("❌ Error running consistency check:", error);
+    console.error("[CONSISTENCY_CHECKER_POST]", error);
     return NextResponse.json(
-      { error: error.message || "Gemini consistency check failed." },
+      { error: error.message || "Consistency check failed." },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
