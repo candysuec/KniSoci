@@ -374,6 +374,10 @@ export default function BrandPage() {
   const [isGeneratingTypography, setIsGeneratingTypography] = useState(false); // New state
   const [isGeneratingMessagingGuide, setIsGeneratingMessagingGuide] = useState(false); // New state
   const [isGeneratingPersonaSheets, setIsGeneratingPersonaSheets] = useState(false); // New state
+  const [isGeneratingPressKit, setIsGeneratingPressKit] = useState(false); // New state
+  const [isGeneratingSalesDeck, setIsGeneratingSalesDeck] = useState(false); // New state
+  const [isGeneratingWebsiteCopy, setIsGeneratingWebsiteCopy] = useState(false); // New state
+  const [isExportingToNotion, setIsExportingToNotion] = useState(false); // New state
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
@@ -530,6 +534,60 @@ export default function BrandPage() {
     finally { setIsGeneratingPersonaSheets(false); }
   };
 
+  // New handlers for Press Kit, Sales Deck, Website Copy
+  const handleGeneratePressKit = async () => {
+    setIsGeneratingPressKit(true);
+    try {
+      await fetch('/api/generate/press-kit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ brandId: id }),
+      });
+      await fetchBrand();
+    } catch (error) { console.error(error); }
+    finally { setIsGeneratingPressKit(false); }
+  };
+
+  const handleGenerateSalesDeck = async () => {
+    setIsGeneratingSalesDeck(true);
+    try {
+      await fetch('/api/generate/sales-deck', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ brandId: id }),
+      });
+      await fetchBrand();
+    } catch (error) { console.error(error); }
+    finally { setIsGeneratingSalesDeck(false); }
+  };
+
+  const handleGenerateWebsiteCopy = async () => {
+    setIsGeneratingWebsiteCopy(true);
+    try {
+      await fetch('/api/generate/website-copy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ brandId: id }),
+      });
+      await fetchBrand();
+    } catch (error) { console.error(error); }
+    finally { setIsGeneratingWebsiteCopy(false); }
+  };
+
+  // New handler for Notion Export
+  const handleExportToNotion = async () => {
+    setIsExportingToNotion(true);
+    try {
+      await fetch('/api/export/notion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ brandId: id }),
+      });
+      await fetchBrand();
+    } catch (error) { console.error(error); }
+    finally { setIsExportingToNotion(false); }
+  };
+
 
   if (isLoading) {
     return <div className="text-center text-slate-400">Loading Brand...</div>;
@@ -565,9 +623,14 @@ export default function BrandPage() {
       <LogoIdeasSection brand={brand} onGenerate={handleGenerateLogoIdeas} isLoading={isGeneratingLogoIdeas} />
       <ColorPalettesSection brand={brand} onGenerate={handleGenerateColors} isLoading={isGeneratingColors} />
       <TypographySection brand={brand} onGenerate={handleGenerateTypography} isLoading={isGeneratingTypography} />
+      <ImageryArtDirectionSection brand={brand} onGenerate={handleGenerateImageryArtDirection} isLoading={isGeneratingImageryArtDirection} />
       <BrandBookSection brand={brand} onGenerate={handleGenerateBook} isLoading={isGeneratingBook} />
       <MessagingGuideSection brand={brand} onGenerate={handleGenerateMessagingGuide} isLoading={isGeneratingMessagingGuide} />
       <PersonaSheetsSection brand={brand} onGenerate={handleGeneratePersonaSheets} isLoading={isGeneratingPersonaSheets} />
+      <PressKitSection brand={brand} onGenerate={handleGeneratePressKit} isLoading={isGeneratingPressKit} />
+      <SalesDeckSection brand={brand} onGenerate={handleGenerateSalesDeck} isLoading={isGeneratingSalesDeck} />
+      <WebsiteCopySection brand={brand} onGenerate={handleGenerateWebsiteCopy} isLoading={isGeneratingWebsiteCopy} />
+      <NotionExportSection brand={brand} onExport={handleExportToNotion} isLoading={isExportingToNotion} />
 
     </motion.div>
   );

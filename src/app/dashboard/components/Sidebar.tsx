@@ -27,7 +27,8 @@ const navItems = [
   { label: "Content Calendar", href: "/dashboard/content-calendar", icon: CalendarDays }, // Added Content Calendar
   { label: "Learn", href: "/dashboard/learn", icon: BookOpen },
   { label: "Studio AI", href: "/dashboard/studio-ai", icon: Sparkles },
-  { label: "Consistency Checker", href: "/dashboard/consistency-checker", icon: CheckCheck }, // Added Consistency Checker
+  { label: "Basic Consistency Checker", href: "/dashboard/consistency-checker", icon: CheckCheck }, // Renamed
+  { label: "Advanced Consistency Checker", href: "/dashboard/advanced-consistency-checker", icon: CheckCheck }, // Added
   { label: "Core", href: "/dashboard/core", icon: Cpu },
   {
     label: "Admin",

@@ -12,7 +12,7 @@
     "@google/genai": "^1.29.0",
     "@google/generative-ai": "^0.24.1",
     "@next-auth/prisma-adapter": "^1.0.7",
-    "@notionhq/client": "^5.3.0",
+    "@notionhq/client": "^5.4.0",
     "@prisma/client": "^6.19.0",
     "@prisma/extension-accelerate": "^2.0.2",
     "@radix-ui/react-alert-dialog": "^1.1.15",

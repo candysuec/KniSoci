@@ -33,7 +33,7 @@ export const authOptions: AuthOptions = {
       console.log("Session Callback - user:", user);
       if (session.user) {
         session.user.id = user.id;
-        session.user.role = user.role; // Cast to UserRole
+        session.user.role = user.role as UserRole; // Explicitly cast to UserRole
       }
       return session;
     },

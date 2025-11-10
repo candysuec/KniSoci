@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import DashboardLayout from "@/components/shared/DashboardLayout";
+import { useSession } from "next-auth/react"; // Import useSession
 
 interface Brand {
   id: string;
@@ -12,6 +13,7 @@ interface Brand {
 }
 
 export default function AdminDashboard() {
+  const { data: session } = useSession(); // Get session data
   const [brands, setBrands] = useState<Brand[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -36,6 +38,9 @@ export default function AdminDashboard() {
     <DashboardLayout>
       <div className="p-6">
         <h1 className="text-2xl font-semibold mb-6">Your Brands</h1>
+        {session?.user?.role && ( // Display user role
+          <p className="text-sm text-slate-400 mb-4">Your Role: {session.user.role}</p>
+        )}
         {loading && <p>Loading brands...</p>}
         {error && <p className="text-red-600">{error}</p>}
 
