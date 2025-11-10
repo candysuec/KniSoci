@@ -1,0 +1,107 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "interval": "5",
+        "unit": "minutes"
+      },
+      "name": "KniHub Health Check Trigger",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3002/api/system-check",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": [
+          {
+            "name": "Accept",
+            "value": "application/json"
+          }
+        ]
+      },
+      "name": "Fetch KniHub Health",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "conditions": [
+          {
+            "value1": "={{$json.status}}",
+            "operator": "notEqual",
+            "value2": "healthy"
+          },
+          {
+            "value1": "={{$json.confidenceScore}}",
+            "operator": "less",
+            "value2": "70"
+          }
+        ],
+        "combineOperator": "or"
+      },
+      "name": "Check for Issues",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [720, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "n8n@yourdomain.com",
+        "toEmail": "your_email@example.com",
+        "subject": "KniHub Health Alert: {{ $json.status }} (Score: {{ $json.confidenceScore }})",
+        "text": "KniHub System Health Report:\n\nStatus: {{ $json.status }}\nConfidence Score: {{ $json.confidenceScore }}\nMessage: {{ $json.message }}\nDetails: {{ JSON.stringify($json.details, null, 2) }}\n\nCheck KniHub Admin Dashboard for more information."
+      },
+      "name": "Send Alert Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [960, 200]
+    },
+    {
+      "parameters": {},
+      "name": "No Issues (Do Nothing)",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [960, 400]
+    }
+  ],
+  "connections": {
+    "KniHub Health Check Trigger": [
+      [
+        {
+          "node": "Fetch KniHub Health",
+          "type": "main",
+          "index": 0
+        }
+      ]
+    ],
+    "Fetch KniHub Health": [
+      [
+        {
+          "node": "Check for Issues",
+          "type": "main",
+          "index": 0
+        }
+      ]
+    ],
+    "Check for Issues": [
+      [
+        {
+          "node": "Send Alert Email",
+          "type": "main",
+          "index": 0
+        }
+      ],
+      [
+        {
+          "node": "No Issues (Do Nothing)",
+          "type": "main",
+          "index": 0
+        }
+      ]
+    ]
+  }
+}
