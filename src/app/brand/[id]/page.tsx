@@ -1,9 +1,13 @@
 "use client";
 
+import { useEffect, useState } from 'react';
 import { Brand } from '@prisma/client';
-import { useState } from 'react';
-import { ArrowLeft, Wand2, Download } from "lucide-react"; // Added Download icon
+import { ArrowLeft, Wand2, Download } from "lucide-react";
 import Link from "next/link";
+import { useParams, useRouter } from 'next/navigation';
+import { motion } from "framer-motion";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 // Helper component for displaying a single DNA item
 const DnaItem = ({ label, value }: { label: string; value: string | string[] | null | undefined }) => {
@@ -627,14 +631,14 @@ export default function BrandPage() {
       <LogoIdeasSection brand={brand} onGenerate={handleGenerateLogoIdeas} isLoading={isGeneratingLogoIdeas} />
       <ColorPalettesSection brand={brand} onGenerate={handleGenerateColors} isLoading={isGeneratingColors} />
       <TypographySection brand={brand} onGenerate={handleGenerateTypography} isLoading={isGeneratingTypography} />
-      <ImageryArtDirectionSection brand={brand} onGenerate={handleGenerateImageryArtDirection} isLoading={isGeneratingImageryArtDirection} />
+      {/* <ImageryArtDirectionSection brand={brand} onGenerate={handleGenerateImageryArtDirection} isLoading={isGeneratingImageryArtDirection} /> */}
       <BrandBookSection brand={brand} onGenerate={handleGenerateBook} isLoading={isGeneratingBook} />
-      <MessagingGuideSection brand={brand} onGenerate={handleGenerateMessagingGuide} isLoading={isGeneratingMessagingGuide} />
-      <PersonaSheetsSection brand={brand} onGenerate={handleGeneratePersonaSheets} isLoading={isGeneratingPersonaSheets} />
-      <PressKitSection brand={brand} onGenerate={handleGeneratePressKit} isLoading={isGeneratingPressKit} />
-      <SalesDeckSection brand={brand} onGenerate={handleGenerateSalesDeck} isLoading={isGeneratingSalesDeck} />
-      <WebsiteCopySection brand={brand} onGenerate={handleGenerateWebsiteCopy} isLoading={isGeneratingWebsiteCopy} />
-      <NotionExportSection brand={brand} onExport={handleExportToNotion} isLoading={isExportingToNotion} />
+      {/* <MessagingGuideSection brand={brand} onGenerate={handleGenerateMessagingGuide} isLoading={isGeneratingMessagingGuide} /> */}
+      {/* <PersonaSheetsSection brand={brand} onGenerate={handleGeneratePersonaSheets} isLoading={isGeneratingPersonaSheets} /> */}
+      {/* <PressKitSection brand={brand} onGenerate={handleGeneratePressKit} isLoading={isGeneratingPressKit} /> */}
+      {/* <SalesDeckSection brand={brand} onGenerate={handleGenerateSalesDeck} isLoading={isGeneratingSalesDeck} /> */}
+      {/* <WebsiteCopySection brand={brand} onGenerate={handleGenerateWebsiteCopy} isLoading={isGeneratingWebsiteCopy} /> */}
+      {/* <NotionExportSection brand={brand} onExport={handleExportToNotion} isLoading={isExportingToNotion} /> */}
 
     </motion.div>
   );
