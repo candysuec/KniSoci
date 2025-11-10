@@ -72,3 +72,4 @@ verify_production_brand_creation.mjs
 .env*
 node_modules/
 *.swp
+service-account-key.json
