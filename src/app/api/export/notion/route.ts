@@ -3,13 +3,14 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 import { prisma } from "@/lib/db";
 import { Client } from "@notionhq/client";
+import { BlockObjectRequest } from "@notionhq/client/build/src/api-endpoints";
 
 // Initialize Notion client
 const notion = new Client({ auth: process.env.NOTION_TOKEN });
 
 // Helper to convert brand data to Notion block format
 const brandToNotionBlocks = (brand: any) => {
-  const blocks = [];
+  const blocks: BlockObjectRequest[] = [];
 
   blocks.push({
     object: "block",
