@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Shield, ShieldCheck } from "lucide-react";
+import { toast } from "sonner"; // Import toast
 
 // Placeholder component for the Safety Score
 const SafetyScoreSection = () => {
@@ -45,14 +46,28 @@ const ReportAndRecoverSection = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // API call to submit the report will go here
-    console.log({ reportedUrl, category, notes });
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setIsSubmitting(false);
-    setReportedUrl("");
-    setCategory("");
-    setNotes("");
+    try {
+      const response = await fetch('/api/safety/reports', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reportedUrl, category, notes }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to submit report");
+      }
+
+      toast.success("Report submitted successfully!");
+      setReportedUrl("");
+      setCategory("");
+      setNotes("");
+    } catch (error: any) {
+      console.error("Error submitting report:", error);
+      toast.error(error.message || "Error submitting report.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
