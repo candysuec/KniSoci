@@ -29,6 +29,8 @@ model User {
   sessions      Session[]
   brands        Brand[]
   selfRepairLogs SelfRepairLog[] // Added inverse relation
+  safetyProfile SafetyProfile? // Inverse relation for SafetyProfile
+  reports       Report[] // Inverse relation for Report
   role          Role      @default(VIEWER) // Added role field
   createdAt     DateTime  @default(now())
   updatedAt     DateTime? @updatedAt
@@ -110,6 +112,32 @@ model SelfRepairLog {
   details   Json? // Store the full checks object as JSON
   userId    String?
   user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model SafetyProfile {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  safetyScore       Int      @default(0)
+  monitoredAccounts Json?    // e.g., [{ platform: "twitter", handle: "@username" }]
+  lastScan          DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Report {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reportedUrl  String
+  category     String   // e.g., "IMPERSONATION", "PHISHING", "SCAM"
+  notes        String?
+  status       String   @default("PENDING") // PENDING, IN_REVIEW, RESOLVED, DISMISSED
+  resolution   String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@index([userId])
 }
