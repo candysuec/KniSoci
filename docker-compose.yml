@@ -32,7 +32,7 @@ services:
       retries: 5
 
   n8n:
-    image: n8n.io/n8n
+    image: n8nio/n8n
     restart: always
     environment:
       N8N_HOST: localhost

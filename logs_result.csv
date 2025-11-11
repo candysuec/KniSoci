@@ -1,0 +1,83 @@
+"TimeUTC","timestampInMs","requestPath","requestMethod","requestQueryString","responseStatusCode","requestId","requestUserAgent","level","environment","branch","vercelCache","type","function","host","deploymentDomain","deploymentId","durationMs","region","maxMemoryUsed","memorySize","message","projectId","traceId","sessionId","invocationId","instanceId","concurrency"
+"2025-11-10 21:48:28",1762811308357,"knisoci.vercel.app/api/auth/error","GET","",-1,"k4nt2-1762811308202-342f9f72b753","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36","error","production","main","","lambda","/api/auth/[...nextauth]","knisoci.vercel.app","knisoci.vercel.app","dpl_DpQYjsiqSMBMhQ6MyhUhxZsFJY7p",-1,"iad1",-1,-1,"[next-auth][error][NO_SECRET] 
+https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production.
+    at r.assertConfig (.next/server/chunks/[root-of-the-server]__208f1ea5._.js:34:11891)
+    at m (.next/server/chunks/[root-of-the-server]__208f1ea5._.js:34:17760)
+    at async a (.next/server/chunks/[root-of-the-server]__208f1ea5._.js:34:41809)
+    at async e.length.t (.next/server/chunks/[root-of-the-server]__208f1ea5._.js:34:43252)
+    at async u (.next/server/chunks/[root-of-the-server]__b57df4a7._.js:1:7754)
+    at async l (.next/server/chunks/[root-of-the-server]__b57df4a7._.js:1:8792) {
+  code: 'NO_SECRET'
+}","prj_brdnP8yiWmGjcZv0uz1IC7sWk4XZ","","","01K9QVVT5KH9A9E9ED5JM3HD99","",-1
+"2025-11-10 21:48:28",1762811308240,"knisoci.vercel.app/api/auth/_log","POST","",-1,"7m7sg-1762811308202-23dc752dc43f","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36","error","production","main","","lambda","/api/auth/[...nextauth]","knisoci.vercel.app","knisoci.vercel.app","dpl_DpQYjsiqSMBMhQ6MyhUhxZsFJY7p",-1,"iad1",-1,-1,"[next-auth][error][NO_SECRET] 
+https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production.
+    at r.assertConfig (.next/server/chunks/[root-of-the-server]__208f1ea5._.js:34:11891)
+    at m (.next/server/chunks/[root-of-the-server]__208f1ea5._.js:34:17760)
+    at async a (.next/server/chunks/[root-of-the-server]__208f1ea5._.js:34:41809)
+    at async e.length.t (.next/server/chunks/[root-of-the-server]__208f1ea5._.js:34:43252)
+    at async u (.next/server/chunks/[root-of-the-server]__b57df4a7._.js:1:7754)
+    at async l (.next/server/chunks/[root-of-the-server]__b57df4a7._.js:1:8792) {
+  code: 'NO_SECRET'
+}","prj_brdnP8yiWmGjcZv0uz1IC7sWk4XZ","","","01K9QVVT5MGEW9FV46FWKH421T","",-1
+"2025-11-10 21:48:28",1762811308212,"knisoci.vercel.app/api/auth/_log","POST","",500,"7m7sg-1762811308202-23dc752dc43f","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36","error","production","main","","lambda","/api/auth/[...nextauth]","knisoci.vercel.app","knisoci.vercel.app","dpl_DpQYjsiqSMBMhQ6MyhUhxZsFJY7p",14,"iad1",144,2048,"","prj_brdnP8yiWmGjcZv0uz1IC7sWk4XZ","","","01K9QVVT5MGEW9FV46FWKH421T","sgumtQcltdhb",1
+"2025-11-10 21:48:28",1762811308211,"knisoci.vercel.app/api/auth/error","GET","",500,"k4nt2-1762811308202-342f9f72b753","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36","error","production","main","","lambda","/api/auth/[...nextauth]","knisoci.vercel.app","knisoci.vercel.app","dpl_DpQYjsiqSMBMhQ6MyhUhxZsFJY7p",131,"iad1",126,2048,"","prj_brdnP8yiWmGjcZv0uz1IC7sWk4XZ","","","01K9QVVT5KH9A9E9ED5JM3HD99","EmZymAoolL4W",1
+"2025-11-10 21:48:28",1762811308147,"knisoci.vercel.app/api/auth/providers","GET","",-1,"7j9g2-1762811308101-2273b94a788f","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36","error","production","main","","lambda","/api/auth/[...nextauth]","knisoci.vercel.app","knisoci.vercel.app","dpl_DpQYjsiqSMBMhQ6MyhUhxZsFJY7p",-1,"iad1",-1,-1,"[next-auth][error][NO_SECRET] 
+https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production.
+    at r.assertConfig (.next/server/chunks/[root-of-the-server]__208f1ea5._.js:34:11891)
+    at m (.next/server/chunks/[root-of-the-server]__208f1ea5._.js:34:17760)
+    at async a (.next/server/chunks/[root-of-the-server]__208f1ea5._.js:34:41809)
+    at async e.length.t (.next/server/chunks/[root-of-the-server]__208f1ea5._.js:34:43252)
+    at async u (.next/server/chunks/[root-of-the-server]__b57df4a7._.js:1:7754)
+    at async l (.next/server/chunks/[root-of-the-server]__b57df4a7._.js:1:8792) {
+  code: 'NO_SECRET'
+}","prj_brdnP8yiWmGjcZv0uz1IC7sWk4XZ","","","01K9QVVT2Y5DRQDAMD7483QMFR","",-1
+"2025-11-10 21:48:28",1762811308126,"knisoci.vercel.app/api/auth/providers","GET","",500,"7j9g2-1762811308101-2273b94a788f","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36","error","production","main","","lambda","/api/auth/[...nextauth]","knisoci.vercel.app","knisoci.vercel.app","dpl_DpQYjsiqSMBMhQ6MyhUhxZsFJY7p",13,"iad1",144,2048,"","prj_brdnP8yiWmGjcZv0uz1IC7sWk4XZ","","","01K9QVVT2Y5DRQDAMD7483QMFR","sgumtQcltdhb",1
+"2025-11-10 21:48:26",1762811306454,"knisoci.vercel.app/api/auth/_log","POST","",-1,"c69lj-1762811306401-62a35815f603","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36","error","production","main","","lambda","/api/auth/[...nextauth]","knisoci.vercel.app","knisoci.vercel.app","dpl_DpQYjsiqSMBMhQ6MyhUhxZsFJY7p",-1,"iad1",-1,-1,"[next-auth][error][NO_SECRET] 
+https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production.
+    at r.assertConfig (.next/server/chunks/[root-of-the-server]__208f1ea5._.js:34:11891)
+    at m (.next/server/chunks/[root-of-the-server]__208f1ea5._.js:34:17760)
+    at async a (.next/server/chunks/[root-of-the-server]__208f1ea5._.js:34:41809)
+    at async e.length.t (.next/server/chunks/[root-of-the-server]__208f1ea5._.js:34:43252)
+    at async u (.next/server/chunks/[root-of-the-server]__b57df4a7._.js:1:7754)
+    at async l (.next/server/chunks/[root-of-the-server]__b57df4a7._.js:1:8792) {
+  code: 'NO_SECRET'
+}","prj_brdnP8yiWmGjcZv0uz1IC7sWk4XZ","","","01K9QVVRE0RQY4PV5RS6Y3H3Y6","",-1
+"2025-11-10 21:48:26",1762811306432,"knisoci.vercel.app/api/auth/_log","POST","",500,"c69lj-1762811306401-62a35815f603","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36","error","production","main","","lambda","/api/auth/[...nextauth]","knisoci.vercel.app","knisoci.vercel.app","dpl_DpQYjsiqSMBMhQ6MyhUhxZsFJY7p",14,"iad1",144,2048,"","prj_brdnP8yiWmGjcZv0uz1IC7sWk4XZ","","","01K9QVVRE0RQY4PV5RS6Y3H3Y6","sgumtQcltdhb",1
+"2025-11-10 21:48:26",1762811306316,"knisoci.vercel.app/api/auth/session","GET","",-1,"zj8hl-1762811306113-806918c591c2","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36","error","production","main","","lambda","/api/auth/[...nextauth]","knisoci.vercel.app","knisoci.vercel.app","dpl_DpQYjsiqSMBMhQ6MyhUhxZsFJY7p",-1,"iad1",-1,-1,"[next-auth][error][NO_SECRET] 
+https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production.
+    at r.assertConfig (.next/server/chunks/[root-of-the-server]__208f1ea5._.js:34:11891)
+    at m (.next/server/chunks/[root-of-the-server]__208f1ea5._.js:34:17760)
+    at async a (.next/server/chunks/[root-of-the-server]__208f1ea5._.js:34:41809)
+    at async e.length.t (.next/server/chunks/[root-of-the-server]__208f1ea5._.js:34:43252)
+    at async u (.next/server/chunks/[root-of-the-server]__b57df4a7._.js:1:7754)
+    at async l (.next/server/chunks/[root-of-the-server]__b57df4a7._.js:1:8792) {
+  code: 'NO_SECRET'
+}","prj_brdnP8yiWmGjcZv0uz1IC7sWk4XZ","","","01K9QVVR9M915983NWGEJAH11V","",-1
+"2025-11-10 21:48:26",1762811306292,"knisoci.vercel.app/api/auth/session","GET","",500,"zj8hl-1762811306113-806918c591c2","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36","error","production","main","","lambda","/api/auth/[...nextauth]","knisoci.vercel.app","knisoci.vercel.app","dpl_DpQYjsiqSMBMhQ6MyhUhxZsFJY7p",17,"iad1",144,2048,"","prj_brdnP8yiWmGjcZv0uz1IC7sWk4XZ","","","01K9QVVR9M915983NWGEJAH11V","sgumtQcltdhb",1
+"2025-11-10 21:48:25",1762811305882,"knisoci.vercel.app/","GET","",200,"kb9fb-1762811305809-b2a9520a9184","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36","info","production","main","PRERENDER","static","/","knisoci.vercel.app","knisoci.vercel.app","dpl_DpQYjsiqSMBMhQ6MyhUhxZsFJY7p",-1,"",-1,-1,"","prj_brdnP8yiWmGjcZv0uz1IC7sWk4XZ","","","","",-1
+"2025-11-10 21:48:22",1762811302377,"knisoci-p7ohfz3eh-candy-s-chevaliers-projects.vercel.app/api/auth/session","GET","",-1,"qml9z-1762811301242-e04062faa99f","vercel-screenshot/1.0","error","production","main","","lambda","/api/auth/[...nextauth]","knisoci-p7ohfz3eh-candy-s-chevaliers-projects.vercel.app","knisoci-p7ohfz3eh-candy-s-chevaliers-projects.vercel.app","dpl_DpQYjsiqSMBMhQ6MyhUhxZsFJY7p",-1,"iad1",-1,-1,"[next-auth][error][NO_SECRET] 
+https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production.
+    at r.assertConfig (.next/server/chunks/[root-of-the-server]__208f1ea5._.js:34:11891)
+    at m (.next/server/chunks/[root-of-the-server]__208f1ea5._.js:34:17760)
+    at async a (.next/server/chunks/[root-of-the-server]__208f1ea5._.js:34:41809)
+    at async e.length.t (.next/server/chunks/[root-of-the-server]__208f1ea5._.js:34:43252)
+    at async u (.next/server/chunks/[root-of-the-server]__b57df4a7._.js:1:7754)
+    at async l (.next/server/chunks/[root-of-the-server]__b57df4a7._.js:1:8792) {
+  code: 'NO_SECRET'
+}","prj_brdnP8yiWmGjcZv0uz1IC7sWk4XZ","","","01K9QVVKGT63VJMBAM7X15HJFX","",-1
+"2025-11-10 21:48:21",1762811301648,"knisoci-p7ohfz3eh-candy-s-chevaliers-projects.vercel.app/api/auth/session","GET","",-1,"vjjrf-1762811301251-81ecfec9443a","vercel-screenshot/1.0","error","production","main","","lambda","/api/auth/[...nextauth]","knisoci-p7ohfz3eh-candy-s-chevaliers-projects.vercel.app","knisoci-p7ohfz3eh-candy-s-chevaliers-projects.vercel.app","dpl_DpQYjsiqSMBMhQ6MyhUhxZsFJY7p",-1,"iad1",-1,-1,"[next-auth][error][NO_SECRET] 
+https://next-auth.js.org/errors#no_secret Please define a `secret` in production. Error [MissingSecretError]: Please define a `secret` in production.
+    at r.assertConfig (.next/server/chunks/[root-of-the-server]__208f1ea5._.js:34:11891)
+    at m (.next/server/chunks/[root-of-the-server]__208f1ea5._.js:34:17760)
+    at async a (.next/server/chunks/[root-of-the-server]__208f1ea5._.js:34:41809)
+    at async e.length.t (.next/server/chunks/[root-of-the-server]__208f1ea5._.js:34:43252)
+    at async u (.next/server/chunks/[root-of-the-server]__b57df4a7._.js:1:7754)
+    at async l (.next/server/chunks/[root-of-the-server]__b57df4a7._.js:1:8792) {
+  code: 'NO_SECRET'
+}","prj_brdnP8yiWmGjcZv0uz1IC7sWk4XZ","","","01K9QVVKGVZV4CKCEXG6PF0JBS","",-1
+"2025-11-10 21:48:21",1762811301422,"knisoci-p7ohfz3eh-candy-s-chevaliers-projects.vercel.app/favicon.ico","GET","",200,"vtrl5-1762811301233-425781efc566","vercel-screenshot/1.0","info","production","main","PRERENDER","static","/favicon.ico","knisoci-p7ohfz3eh-candy-s-chevaliers-projects.vercel.app","knisoci-p7ohfz3eh-candy-s-chevaliers-projects.vercel.app","dpl_DpQYjsiqSMBMhQ6MyhUhxZsFJY7p",-1,"",-1,-1,"","prj_brdnP8yiWmGjcZv0uz1IC7sWk4XZ","","","","",-1
+"2025-11-10 21:48:21",1762811301409,"knisoci-p7ohfz3eh-candy-s-chevaliers-projects.vercel.app/favicon.ico","GET","",200,"nlrc4-1762811301224-0c4d741ebf29","vercel-screenshot/1.0","info","production","main","PRERENDER","static","/favicon.ico","knisoci-p7ohfz3eh-candy-s-chevaliers-projects.vercel.app","knisoci-p7ohfz3eh-candy-s-chevaliers-projects.vercel.app","dpl_DpQYjsiqSMBMhQ6MyhUhxZsFJY7p",-1,"",-1,-1,"","prj_brdnP8yiWmGjcZv0uz1IC7sWk4XZ","","","","",-1
+"2025-11-10 21:48:21",1762811301403,"knisoci-p7ohfz3eh-candy-s-chevaliers-projects.vercel.app/api/auth/session","GET","",500,"vjjrf-1762811301251-81ecfec9443a","vercel-screenshot/1.0","error","production","main","","lambda","/api/auth/[...nextauth]","knisoci-p7ohfz3eh-candy-s-chevaliers-projects.vercel.app","knisoci-p7ohfz3eh-candy-s-chevaliers-projects.vercel.app","dpl_DpQYjsiqSMBMhQ6MyhUhxZsFJY7p",255,"iad1",114,2048,"","prj_brdnP8yiWmGjcZv0uz1IC7sWk4XZ","","","01K9QVVKGVZV4CKCEXG6PF0JBS","EmZymAoolL4W",1
+"2025-11-10 21:48:21",1762811301402,"knisoci-p7ohfz3eh-candy-s-chevaliers-projects.vercel.app/api/auth/session","GET","",500,"qml9z-1762811301242-e04062faa99f","vercel-screenshot/1.0","error","production","main","","lambda","/api/auth/[...nextauth]","knisoci-p7ohfz3eh-candy-s-chevaliers-projects.vercel.app","knisoci-p7ohfz3eh-candy-s-chevaliers-projects.vercel.app","dpl_DpQYjsiqSMBMhQ6MyhUhxZsFJY7p",857,"iad1",144,2048,"","prj_brdnP8yiWmGjcZv0uz1IC7sWk4XZ","","","01K9QVVKGT63VJMBAM7X15HJFX","sgumtQcltdhb",1
+"2025-11-10 21:48:20",1762811300474,"knisoci-p7ohfz3eh-candy-s-chevaliers-projects.vercel.app/","GET","",200,"8v77z-1762811300231-0056fe5f03b9","vercel-screenshot/1.0","info","production","main","PRERENDER","static","/","knisoci-p7ohfz3eh-candy-s-chevaliers-projects.vercel.app","knisoci-p7ohfz3eh-candy-s-chevaliers-projects.vercel.app","dpl_DpQYjsiqSMBMhQ6MyhUhxZsFJY7p",-1,"",-1,-1,"","prj_brdnP8yiWmGjcZv0uz1IC7sWk4XZ","","","","",-1
+"2025-11-10 21:48:20",1762811300462,"knisoci-p7ohfz3eh-candy-s-chevaliers-projects.vercel.app/","GET","",200,"c8hsf-1762811300144-b26e97f4dea5","vercel-screenshot/1.0","info","production","main","PRERENDER","static","/","knisoci-p7ohfz3eh-candy-s-chevaliers-projects.vercel.app","knisoci-p7ohfz3eh-candy-s-chevaliers-projects.vercel.app","dpl_DpQYjsiqSMBMhQ6MyhUhxZsFJY7p",-1,"",-1,-1,"","prj_brdnP8yiWmGjcZv0uz1IC7sWk4XZ","","","","",-1
